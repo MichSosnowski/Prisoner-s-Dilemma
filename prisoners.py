@@ -5,11 +5,13 @@
 from PySide6.QtCore import QRunnable, Slot
 
 class Prisoners(QRunnable):
-    def __init__(self):
+    def __init__(self, players, *data):
         super().__init__(self)
-        print('Test')
+        if players == 2:
+            print(players)
+        else:
+            print(players)
 
     @Slot()
     def run(self):
-        while True:
-            print('abc')
+        pass

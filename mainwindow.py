@@ -125,7 +125,9 @@ class MainWindow(QMainWindow):
             self.dialog.textEdit.clear()
 
     def start(self):
-        dilemma = prisoners.Prisoners()
+        players = 2
+        if self.window.PD2p.isChecked() == False: players = int(self.window.NlineEdit.text())
+        dilemma = prisoners.Prisoners(players)
         self.threadpool.start(dilemma)
 
 if __name__ == "__main__":
