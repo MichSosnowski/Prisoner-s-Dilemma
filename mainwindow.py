@@ -1,16 +1,23 @@
 # This Python file uses the following encoding: utf-8
+# Main file of a program
+# It is responsible for GUI.
+
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QIntValidator, QDoubleValidator
+from PySide6.QtCore import QThreadPool
 import matplotlib
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
+import prisoners
 
 matplotlib.use('Qt5Agg')
 
-file = 'form.ui'                                    # ui filename
+file = 'form.ui'                                    # form.ui filename
+file2 = 'dialog.ui'                                 # dialog.ui filename
 windowTitle = "Prisoner's Dilemma"                  # main window title
+dialogTitle = "PD Debug"                            # debug dialog
 width = 1000                                        # main window width
 height = 700                                        # main window height
 bottomN = 3                                         # the smallest number of players in NpPD
@@ -27,6 +34,7 @@ fontSize = 9                                        # font size for titles of pl
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.threadpool = QThreadPool()
         self.load_ui()
 
     def load_ui(self):
@@ -38,10 +46,14 @@ class MainWindow(QMainWindow):
         self.setValidators()
         self.showPlots()
         self.window.show()
+        self.dialog = loader.load(file2, None)
+        self.dialog.setWindowTitle(dialogTitle)
 
     def setConnects(self):
         self.window.PD2p.clicked.connect(self.selectOption)
         self.window.PDNp.clicked.connect(self.selectOption)
+        self.window.checkBox_2.clicked.connect(self.showDebug)
+        self.window.pushButton.clicked.connect(self.start)
 
     def setValidators(self):
         self.window.NlineEdit.setValidator(QIntValidator(bottomN, top))
@@ -103,6 +115,16 @@ class MainWindow(QMainWindow):
             self.window.N.setEnabled(True)
             self.window.NlineEdit.setEnabled(True)
             self.window.groupBox2pPD.setEnabled(False)
+
+    def showDebug(self):
+        if self.window.checkBox_2.isChecked() == True: self.dialog.show()
+        else:
+            self.dialog.hide()
+            self.dialog.textEdit.clear()
+
+    def start(self):
+        dilemma = prisoners.Prisoners()
+        self.threadpool.start(dilemma)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

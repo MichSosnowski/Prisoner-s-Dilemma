@@ -411,7 +411,7 @@ class Ui_MainWindow(object):
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"pop_size", None))
         self.label_15.setText(QCoreApplication.translate("MainWindow", u"num_of_generations", None))
         self.checkBox.setText(QCoreApplication.translate("MainWindow", u"elitist_strategy", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Start", None))
+        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"START", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"seed", None))
         self.freqlineEdit.setText(QCoreApplication.translate("MainWindow", u"30", None))
         self.label_20.setText(QCoreApplication.translate("MainWindow", u"freq_gen_start", None))
