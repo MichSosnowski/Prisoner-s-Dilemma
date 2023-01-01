@@ -6,7 +6,7 @@ import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QIntValidator, QDoubleValidator
-from PySide6.QtCore import QThreadPool
+from PySide6.QtCore import QThreadPool, Qt
 import matplotlib
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
@@ -48,6 +48,8 @@ class MainWindow(QMainWindow):
         self.window.show()
         self.dialog = loader.load(file2, None)
         self.dialog.setWindowTitle(dialogTitle)
+        self.dialog.setWindowFlag(Qt.WindowCloseButtonHint, False)
+        self.dialog.setWindowFlag(Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint, True)
 
     def setConnects(self):
         self.window.PD2p.clicked.connect(self.selectOption)
