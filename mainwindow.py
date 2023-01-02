@@ -3,7 +3,7 @@
 # It is responsible for GUI.
 
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout
+from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout, QFileDialog
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QIntValidator, QDoubleValidator
 from PySide6.QtCore import QThreadPool, Qt
@@ -126,6 +126,9 @@ class MainWindow(QMainWindow):
     def printDebug(self, data):
         self.dialog.textEdit.setText(data)
 
+    def showFileDialog(self, title):
+        prisoners.filename = QFileDialog.getOpenFileName(self, title, '.', 'Text files (*.txt)')
+
     def start(self):
         players = 2
         data = [int(self.window.C1lineEdit.text()), int(self.window.C2lineEdit.text()), int(self.window.C3lineEdit.text()),
@@ -142,6 +145,7 @@ class MainWindow(QMainWindow):
         if self.window.PD2p.isChecked() == False: players = int(self.window.NlineEdit.text())
         dilemma = prisoners.Prisoners(players, data)
         dilemma.signals.show.connect(self.printDebug)
+        dilemma.signals.file.connect(self.showFileDialog)
         self.threadpool.start(dilemma)
 
 if __name__ == "__main__":

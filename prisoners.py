@@ -6,9 +6,11 @@ from PySide6.QtCore import QObject, QRunnable, Slot, Signal
 import tempfile, random
 
 maxrange = 9999999999999999                     # max range of random seed
+filename = ''                                   # name of file to open
 
 class PrisonersSignals(QObject):
     show = Signal(str)
+    file = Signal(str)
 
 class Prisoners(QRunnable):
     def __init__(self, players, data):
@@ -32,41 +34,77 @@ class Prisoners(QRunnable):
         self.delta_freq = data[21]
         self.debug = data[22]
         self.directory = tempfile.TemporaryDirectory()
-        self.strategies = self.directory.name + '/strat.txt'
+        self.strategies = self.directory.name + '\\strat.txt'
+
+    def clearFileName(self):
+        global filename
+        filename = ''
+
+    def getFileName(self, title):
+        global filename
+        self.signals.file.emit(title)
+        while filename == '': ...
+        filename = filename[0]
 
     def readData(self):
         if self.players == 2 and self.pop_size == 2:
-            with open('Strategies-2PD-pop_size=2-length=64.txt', 'r') as f:
+            self.getFileName('Choose a file of strategies for 2pPD and pop_size = 2...')
+            with open(filename, 'r') as f:
                 file = open(self.strategies, 'w')
                 lines = f.readlines()[1:]
                 for line in lines: file.write(line)
                 file.close()
-            with open('Prehistory-1-2PD-l=3.txt', 'r') as f:
+            self.clearFileName()
+            self.getFileName('Choose a file of prehistory for 2pPD and pop_size = 2...')
+            with open(filename, 'r') as f:
                 self.prehistory = f.readlines()[1].split()
                 self.prehistory = [int(self.prehistory[i]) for i in range(len(self.prehistory))]
+            self.clearFileName()
         elif self.players == 2 and self.pop_size == 3:
-            with open('Strategies-2PD-pop_size=3-length=64.txt', 'r') as f:
+            self.getFileName('Choose a file of strategies for 2pPD and pop_size = 3...')
+            with open(filename, 'r') as f:
                 file = open(self.strategies, 'w')
                 lines = f.readlines()[1:]
                 for line in lines: file.write(line)
                 file.close()
-            with open('Prehistory-2-2PD-l=3.txt', 'r') as f:
+            self.clearFileName()
+            self.getFileName('Choose a file of prehistory for 2pPD and pop_size = 3...')
+            with open(filename, 'r') as f:
                 self.prehistory = f.readlines()[1].split()
                 self.prehistory = [int(self.prehistory[i]) for i in range(len(self.prehistory))]
+            self.clearFileName()
         elif self.players == 3 and self.pop_size == 3:
-            with open('Strategies-1-3PD-pop_size=3,l=2,length=64.txt', 'r') as f:
+            self.getFileName('Choose a file of strategies for 3pPD and pop_size = 3...')
+            with open(filename, 'r') as f:
                 file = open(self.strategies, 'w')
                 lines = f.readlines()[1:]
                 for line in lines: file.write(line)
                 file.close()
-            with open('Prehistory-1-3PD-l=2.txt', 'r') as f:
+            self.clearFileName()
+            self.getFileName('Choose a file of prehistory for 3pPD and pop_size = 3...')
+            with open(filename, 'r') as f:
                 lines = f.readlines()[1:]
                 self.prehistory = list()
                 for line in lines:
                     self.prehistory.extend(line.split())
                 self.prehistory = [int(self.prehistory[i]) for i in range(len(self.prehistory))]
+            self.clearFileName()
         elif self.players == 3 and self.pop_size == 4:
-            pass
+            self.getFileName('Choose a file of strategies for 3pPD and pop_size = 4...')
+            with open(filename, 'r') as f:
+                file = open(self.strategies, 'w')
+                lines = f.readlines()[1:]
+                for line in lines: file.write(line)
+                file.close()
+            self.clearFileName()
+            self.getFileName('Choose a file of prehistory for 3pPD and pop_size = 4...')
+            with open(filename, 'r') as f:
+                lines = f.readlines()[1:]
+                self.prehistory = list()
+                for line in lines:
+                    self.prehistory.extend(line.split())
+                self.prehistory = [int(self.prehistory[i]) for i in range(len(self.prehistory))]
+            self.clearFileName()
         elif self.players == 2 and self.pop_size > 3:
             if self.seed == '': self.seed = random.randrange(maxrange)
             rng = random.Random(self.seed)
