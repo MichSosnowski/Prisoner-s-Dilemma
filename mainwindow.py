@@ -124,7 +124,7 @@ class MainWindow(QMainWindow):
             self.dialog.textEdit.clear()
 
     def printDebug(self, data):
-        self.dialog.textEdit.setText(data)
+        self.dialog.textEdit.append(data)
 
     def showFileDialog(self, title):
         prisoners.filename = QFileDialog.getOpenFileName(self, title, '.', 'Text files (*.txt)')

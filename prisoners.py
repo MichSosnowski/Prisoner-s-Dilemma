@@ -3,7 +3,7 @@
 # It is used by mainwindow.py
 
 from PySide6.QtCore import QObject, QRunnable, Slot, Signal
-import tempfile, random
+import tempfile, random, sys
 
 maxrange = 9999999999999999                     # max range of random seed
 filename = ''                                   # name of file to open
@@ -138,8 +138,75 @@ class Prisoners(QRunnable):
             text += ' '.join([str(self.prehistory[i]) for i in range(len(self.prehistory))])
             self.signals.show.emit(text)
 
+    def writeData2(self):
+        text = '\nP1_strat:\n'
+        text += ' '.join([str(self.P1_strat[i]) for i in range(len(self.P1_strat))])
+        text += '\n\nP2_strat:\n'
+        text += ' '.join([str(self.P2_strat[i]) for i in range(len(self.P2_strat))])
+        text += '\n\nstrat_id_1 = ' + str(self.strat_id_1)
+        text += '\nstrat_id_2 = ' + str(self.strat_id_2)
+        self.signals.show.emit(text)
+        text = '\nc_of_opponents:\n'
+        text += ' '.join([str(self.c_of_opponents[i]) for i in range(len(self.c_of_opponents))])
+        text += '\n\ngener_history_freq:\n'
+        text += ' '.join([str(self.gener_history_freq[i]) for i in range(len(self.gener_history_freq))])
+        self.signals.show.emit(text)
+
+    def ZERO_2PD_structures(self):
+        self.SUM_with_opponents = list()
+        self.c_of_opponents = list()
+        self.gener_history_freq = list()
+        self.P1_strat = list()
+        self.P2_strat = list()
+        self.history_freq = list()
+        self.fitness = list()
+
+    def ZERO_NPD_structures(self):
+        print('Not implemented!')
+        sys.exit(1)
+
+    def toDecimal(self, data):
+        data = [str(data[i]) for i in range(len(data))]
+        data = '0b' + ''.join(data)
+        return int(data, 2)
+
+    def inic_players_2pPD(self):
+        self.id_P1 = 0
+        self.id_P2 = 1
+        with open(self.strategies, 'r') as file:
+            lines = file.readlines()
+            self.P1_strat.extend([int(lines[0][i]) for i in range(len(lines[0])) if lines[0][i] != ' ' and lines[0][i] != '\n'])
+            self.P2_strat.extend([int(lines[1][i]) for i in range(len(lines[1])) if lines[1][i] != ' ' and lines[1][i] != '\n'])
+        self.P1_preh = self.prehistory[:]
+        self.P2_preh = list()
+        for i in range(len(self.P1_preh)): self.P2_preh.append(0 if self.P1_preh[i] == 1 else 1)
+        self.strat_id_1 = self.toDecimal(self.P1_preh)
+        self.strat_id_2 = self.toDecimal(self.P2_preh)
+        self.c_of_opponents = [0 for i in range(self.pop_size)]
+        self.c_of_opponents[self.id_P1] += 1
+        self.c_of_opponents[self.id_P2] += 1
+        self.gener_history_freq = [0 for i in range(len(self.P1_strat))]
+        self.gener_history_freq[self.strat_id_1 - 1] += 1
+        self.gener_history_freq[self.strat_id_2 - 1] += 1
+
+    def inic_players_NpPD(self):
+        print('Not implemented!')
+        sys.exit(1)
+
+    def functions_2PD(self):
+        self.ZERO_2PD_structures()
+        self.inic_players_2pPD()
+        if self.debug == True: self.writeData2()
+
+    def functions_NPD(self):
+        self.ZERO_NPD_structures()
+        self.inic_players_NpPD()
+        if self.debug == True: pass
+
     @Slot()
     def run(self):
         self.gen = 0
         self.readData()
         self.writeData()
+        if self.players == 2: self.functions_2PD()
+        else: self.functions_NPD()
