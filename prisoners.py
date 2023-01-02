@@ -117,7 +117,7 @@ class Prisoners(QRunnable):
         elif self.players != 2 and self.pop_size > 4:
             if self.seed == '': self.seed = random.randrange(maxrange)
             rng = random.Random(self.seed)
-            with open(self.strategies, 'w+') as file:
+            with open(self.strategies, 'w') as file:
                 for i in range(self.pop_size):
                     for j in range(2 ** self.prehistory_l):
                         file.write(str(rng.randint(0, 1)) + ' ')
