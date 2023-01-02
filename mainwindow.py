@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
         self.setValidators()
         self.showPlots()
         self.window.show()
-        self.dialog = loader.load(file2, None)
+        self.dialog = loader.load(file2, self)
         self.dialog.setWindowTitle(dialogTitle)
         self.dialog.setWindowFlag(Qt.WindowCloseButtonHint, False)
         self.dialog.setWindowFlag(Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint, True)
@@ -77,7 +77,6 @@ class MainWindow(QMainWindow):
         self.window.crosslineEdit.setValidator(QDoubleValidator(bottom, topD, numberAfterDot))
         self.window.mutlineEdit.setValidator(QDoubleValidator(bottom, topD, numberAfterDot))
         self.window.runslineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.seedlineEdit.setValidator(QIntValidator(bottom, top))
         self.window.freqlineEdit.setValidator(QIntValidator(bottom, top))
         self.window.deltalineEdit.setValidator(QIntValidator(bottom, top))
 
@@ -124,10 +123,25 @@ class MainWindow(QMainWindow):
             self.dialog.hide()
             self.dialog.textEdit.clear()
 
+    def printDebug(self, data):
+        self.dialog.textEdit.setText(data)
+
     def start(self):
         players = 2
+        data = [int(self.window.C1lineEdit.text()), int(self.window.C2lineEdit.text()), int(self.window.C3lineEdit.text()),
+                int(self.window.D1lineEdit.text()), int(self.window.D2lineEdit.text()), int(self.window.C4lineEdit.text()),
+                int(self.window.D3lineEdit.text()), int(self.window.D4lineEdit.text()), self.window.problineEdit.text(),
+                int(self.window.tourlineEdit.text()), int(self.window.opplineEdit.text()), int(self.window.prelineEdit.text()),
+                int(self.window.poplineEdit.text()), int(self.window.genlineEdit.text()), int(self.window.toursizelineEdit.text()),
+                self.window.crosslineEdit.text(), self.window.mutlineEdit.text(), self.window.checkBox.isChecked(),
+                int(self.window.runslineEdit.text()), self.window.seedlineEdit.text(), int(self.window.freqlineEdit.text()),
+                int(self.window.deltalineEdit.text()), self.window.checkBox_2.isChecked()]
+        for i in range(len(data)):
+            if type(data[i]) == type(str()) and data[i] != '':
+                data[i] = float(data[i].replace(',', '.'))
         if self.window.PD2p.isChecked() == False: players = int(self.window.NlineEdit.text())
-        dilemma = prisoners.Prisoners(players)
+        dilemma = prisoners.Prisoners(players, data)
+        dilemma.signals.show.connect(self.printDebug)
         self.threadpool.start(dilemma)
 
 if __name__ == "__main__":
