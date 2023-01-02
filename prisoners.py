@@ -111,7 +111,9 @@ class Prisoners(QRunnable):
             with open(self.strategies, 'w') as file:
                 for i in range(self.pop_size):
                     for j in range(self.players ** self.prehistory_l):
-                        file.write(str(rng.randint(0, 1)) + ' ')
+                        los = rng.random()
+                        if los < self.prob_of_init_C: file.write('1 ')
+                        else: file.write('0 ')
                     file.write('\n')
             self.prehistory = [rng.randint(0, 1) for i in range(self.prehistory_l)]
         elif self.players != 2 and self.pop_size > 4:
@@ -120,7 +122,9 @@ class Prisoners(QRunnable):
             with open(self.strategies, 'w') as file:
                 for i in range(self.pop_size):
                     for j in range(2 ** self.prehistory_l):
-                        file.write(str(rng.randint(0, 1)) + ' ')
+                        los = rng.random()
+                        if los < self.prob_of_init_C: file.write('1 ')
+                        else: file.write('0 ')
                     file.write('\n')
             self.prehistory = [rng.randint(0, 1) for i in range(self.prehistory_l)]
 
@@ -153,17 +157,27 @@ class Prisoners(QRunnable):
         self.signals.show.emit(text)
 
     def ZERO_2PD_structures(self):
-        self.SUM_with_opponents = list()
-        self.c_of_opponents = list()
+        self.SUM_with_opponents = [0 for i in range(self.pop_size)]
+        self.c_of_opponents = [0 for i in range(self.pop_size)]
         self.gener_history_freq = list()
         self.P1_strat = list()
         self.P2_strat = list()
         self.history_freq = list()
-        self.fitness = list()
+        self.fitness = [0 for i in range(self.pop_size)]
 
     def ZERO_NPD_structures(self):
-        print('Not implemented!')
-        sys.exit(1)
+        self.id_N_players = [0 for i in range(self.players)]
+        self.N_players_strategies = [0 for i in range(self.players)]
+        self.N_players_preh = [0 for i in range(self.players)]
+        self.curr_action_N_players = [0 for i in range(self.players)]
+        self.num_of_c_neighb_N_players = [0 for i in range(self.players)]
+        self.payoff_N_players = [0 for i in range(self.players)]
+        self.N_players_strat_id = [0 for i in range(self.players)]
+        self.SUM_with_opponents = [0 for i in range(self.pop_size)]
+        self.c_of_opponents = [0 for i in range(self.pop_size)]
+        self.gener_history_freq = list()
+        self.history_freq = list()
+        self.fitness = [0 for i in range(self.pop_size)]
 
     def toDecimal(self, data):
         data = [str(data[i]) for i in range(len(data))]
@@ -188,10 +202,17 @@ class Prisoners(QRunnable):
         self.gener_history_freq = [0 for i in range(len(self.P1_strat))]
         self.gener_history_freq[self.strat_id_1 - 1] += 1
         self.gener_history_freq[self.strat_id_2 - 1] += 1
+        self.history_freq = [0 for i in range(len(self.P1_strat))]
 
     def inic_players_NpPD(self):
-        print('Not implemented!')
-        sys.exit(1)
+        for i in range(self.players):
+            self.id_N_players[i] = i
+            with open(self.strategies, 'r') as file:
+                lines = file.readlines()
+                self.N_players_strategies[i] = ''.join(lines[i][:-1].split(' '))
+            self.c_of_opponents[i] += 1
+            # do dokończenia
+            sys.exit(1)
 
     def functions_2PD(self):
         self.ZERO_2PD_structures()
@@ -203,6 +224,9 @@ class Prisoners(QRunnable):
         self.inic_players_NpPD()
         if self.debug == True: pass
 
+    def tournament2PD(self):
+        pass
+
     @Slot()
     def run(self):
         self.gen = 0
@@ -210,3 +234,7 @@ class Prisoners(QRunnable):
         self.writeData()
         if self.players == 2: self.functions_2PD()
         else: self.functions_NPD()
+        if self.players == 2 and self.pop_size == 2:
+            self.tournament2PD()
+        elif self.players == 2 and self.pop_size > 2: pass
+        else: pass
