@@ -380,8 +380,10 @@ class Prisoners(QRunnable):
             if self.min == self.num_of_opponents: self.duel_fulfilment = True
             else:
                 temp = self.c_of_opponents
+                temp1 = self.history_freq
                 self.ZERO_2PD_structures()
                 self.c_of_opponents = temp
+                self.history_freq = temp1
                 self.id_P1 = self.id
                 self.id_P2 = random.randint(0, self.pop_size - 1)
                 while self.id_P2 == self.id_P1: self.id_P2 = random.randint(0, self.pop_size - 1)
@@ -446,7 +448,7 @@ class Prisoners(QRunnable):
             self.fitnessStatistics()
         elif self.players == 2 and self.pop_size > 2:
             self.duel2PD()
-            #self.fitnessStatistics()
+            self.fitnessStatistics()
             #self.GAoperators()
         else:
             pass
