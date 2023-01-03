@@ -156,6 +156,29 @@ class Prisoners(QRunnable):
         text += ' '.join([str(self.gener_history_freq[i]) for i in range(len(self.gener_history_freq))])
         self.signals.show.emit(text)
 
+    def writeData3(self, game):
+        text = '\nTOURNAMENT - 2 players\n\n'
+        text += 'game = %d\n' % game
+        text += 'curr_action_P1 = %d\n' % self.curr_action_P1
+        text += 'curr_action_P2 = %d\n' % self.curr_action_P2
+        text += 'payoff_P1 = %d\n' % self.payoff_P1
+        text += 'payoff_P2 = %d' % self.payoff_P2
+        self.signals.show.emit(text)
+        text = 'SUM_with_opponents:\n'
+        text += ' '.join([str(self.SUM_with_opponents[i]) for i in range(len(self.SUM_with_opponents))])
+        text += '\nPrehistory:\n'
+        text += ' '.join([str(self.prehistory[i]) for i in range(len(self.prehistory))])
+        text += '\nP1_preh:\n'
+        text += ' '.join([str(self.P1_preh[i]) for i in range(len(self.P1_preh))])
+        text += '\nP2_preh:\n'
+        text += ' '.join([str(self.P2_preh[i]) for i in range(len(self.P2_preh))])
+        self.signals.show.emit(text)
+        text = 'strat_id_1 = ' + str(self.strat_id_1)
+        text += '\nstrat_id_2 = ' + str(self.strat_id_2)
+        text += '\ngener_history_freq:\n'
+        text += ' '.join([str(self.gener_history_freq[i]) for i in range(len(self.gener_history_freq))]) + '\n'
+        self.signals.show.emit(text)
+
     def ZERO_2PD_structures(self):
         self.SUM_with_opponents = [0 for i in range(self.pop_size)]
         self.c_of_opponents = [0 for i in range(self.pop_size)]
@@ -192,8 +215,13 @@ class Prisoners(QRunnable):
             self.P1_strat.extend([int(lines[0][i]) for i in range(len(lines[0])) if lines[0][i] != ' ' and lines[0][i] != '\n'])
             self.P2_strat.extend([int(lines[1][i]) for i in range(len(lines[1])) if lines[1][i] != ' ' and lines[1][i] != '\n'])
         self.P1_preh = self.prehistory[:]
-        self.P2_preh = list()
-        for i in range(len(self.P1_preh)): self.P2_preh.append(0 if self.P1_preh[i] == 1 else 1)
+        self.P2_preh = [0 for i in range(len(self.P1_preh))]
+        i = 0
+        while i < len(self.P1_preh):
+            self.P2_preh[i] = self.P1_preh[i + 1]
+            self.P2_preh[i + 1] = self.P1_preh[i]
+            i += 2
+            if i >= len(self.P1_preh): break
         self.strat_id_1 = self.toDecimal(self.P1_preh)
         self.strat_id_2 = self.toDecimal(self.P2_preh)
         self.c_of_opponents = [0 for i in range(self.pop_size)]
@@ -225,7 +253,37 @@ class Prisoners(QRunnable):
         if self.debug == True: pass
 
     def tournament2PD(self):
-        pass
+        for i in range(self.num_of_tournaments):
+            self.curr_action_P1 = self.P1_strat[self.strat_id_1 - 1]
+            self.curr_action_P2 = self.P2_strat[self.strat_id_2 - 1]
+            if self.curr_action_P1 * self.curr_action_P2 == 1:
+                self.payoff_P1 = self.payments[0]
+                self.payoff_P2 = self.payments[1]
+            elif self.curr_action_P1 == 1:
+                self.payoff_P1 = self.payments[2]
+                self.payoff_P2 = self.payments[4]
+            elif self.curr_action_P2 == 1:
+                self.payoff_P1 = self.payments[5]
+                self.payoff_P2 = self.payments[3]
+            else:
+                self.payoff_P1 = self.payments[6]
+                self.payoff_P2 = self.payments[7]
+            self.SUM_with_opponents[self.id_P1] += self.payoff_P1
+            self.SUM_with_opponents[self.id_P2] += self.payoff_P2
+            self.prehistory = [self.curr_action_P1, self.curr_action_P2] + self.prehistory[:-2]
+            self.P1_preh = self.prehistory[:]
+            self.P2_preh = [0 for i in range(len(self.P1_preh))]
+            j = 0
+            while j < len(self.P1_preh):
+                self.P2_preh[j] = self.P1_preh[j + 1]
+                self.P2_preh[j + 1] = self.P1_preh[j]
+                j += 2
+                if j >= len(self.P1_preh): break
+            self.strat_id_1 = self.toDecimal(self.P1_preh)
+            self.strat_id_2 = self.toDecimal(self.P2_preh)
+            self.gener_history_freq[self.strat_id_1 - 1] += 1
+            self.gener_history_freq[self.strat_id_2 - 1] += 1
+            if self.debug == True: self.writeData3(i + 1)
 
     @Slot()
     def run(self):
