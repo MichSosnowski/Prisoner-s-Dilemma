@@ -192,6 +192,9 @@ class Prisoners(QRunnable):
                         else: file.write('0 ')
                     file.write('\n')
             self.prehistory = [rng.randint(0, 1) for i in range(self.prehistory_l)]
+            with open(self.strategies, 'r') as file:
+                for lines in file: print(lines)
+            print(self.prehistory)
         elif self.players != 2 and self.pop_size > 4:
             rng = random.Random(self.seed)
             with open(self.strategies, 'w') as file:
@@ -368,6 +371,41 @@ class Prisoners(QRunnable):
             self.gener_history_freq[self.strat_id_2 - 1] += 1
             if self.debug == True: self.writeData3(i + 1)
 
+    def duel2PD(self):
+        self.duel_fulfilment = False
+        while self.duel_fulfilment == False:
+            self.tournament2PD()
+            self.min = min(self.c_of_opponents)
+            self.id = self.c_of_opponents.index(self.min)
+            if self.min == self.num_of_opponents: self.duel_fulfilment = True
+            else:
+                temp = self.c_of_opponents
+                self.ZERO_2PD_structures()
+                self.c_of_opponents = temp
+                self.id_P1 = self.id
+                self.id_P2 = random.randint(0, self.pop_size - 1)
+                while self.id_P2 == self.id_P1: self.id_P2 = random.randint(0, self.pop_size - 1)
+                with open(self.strategies, 'r') as file:
+                    lines = file.readlines()
+                    self.P1_strat.extend([int(lines[self.id_P1][i]) for i in range(len(lines[self.id_P1])) if lines[self.id_P1][i] != ' ' and lines[self.id_P1][i] != '\n'])
+                    self.P2_strat.extend([int(lines[self.id_P2][i]) for i in range(len(lines[self.id_P2])) if lines[self.id_P2][i] != ' ' and lines[self.id_P2][i] != '\n'])
+                self.prehistory = [random.randint(0, 1) for i in range(len(self.prehistory))]
+                self.P1_preh = self.prehistory[:]
+                i = 0
+                while i < len(self.P1_preh):
+                    self.P2_preh[i] = self.P1_preh[i + 1]
+                    self.P2_preh[i + 1] = self.P1_preh[i]
+                    i += 2
+                    if i >= len(self.P1_preh): break
+                self.gener_history_freq = [0 for i in range(len(self.P1_strat))]
+                self.strat_id_1 = self.toDecimal(self.P1_preh)
+                self.strat_id_2 = self.toDecimal(self.P2_preh)
+                self.c_of_opponents[self.id_P1] += 1
+                self.c_of_opponents[self.id_P2] += 1
+                self.gener_history_freq[self.strat_id_1 - 1] += 1
+                self.gener_history_freq[self.strat_id_2 - 1] += 1
+        if self.debug == True: self.writeData2()
+
     def fitnessStatistics(self):
         for i in range(self.pop_size):
             self.fitness[i] = self.SUM_with_opponents[i] / (self.num_of_tournaments * self.c_of_opponents[i])
@@ -406,5 +444,12 @@ class Prisoners(QRunnable):
         if self.players == 2 and self.pop_size == 2:
             self.tournament2PD()
             self.fitnessStatistics()
-        elif self.players == 2 and self.pop_size > 2: pass
-        else: pass
+        elif self.players == 2 and self.pop_size > 2:
+            self.duel2PD()
+            #self.fitnessStatistics()
+            #self.GAoperators()
+        else:
+            pass
+            #self.duelNPD()
+            #self.fitnessStatistics()
+            #self.GAoperators()
