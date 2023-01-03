@@ -1,0 +1,4 @@
+# 3pPD; Prehistory_3PD[1..l=3,1..N=3], l_preh=9, lenght=512
+0 1 0
+1 0 1
+1 1 1

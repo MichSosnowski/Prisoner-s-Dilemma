@@ -3,6 +3,7 @@
 # It is used by mainwindow.py
 
 from PySide6.QtCore import QObject, QRunnable, Slot, Signal
+from statistics import mean
 import tempfile, random, sys
 
 maxrange = 9999999999999999                     # max range of random seed
@@ -30,11 +31,87 @@ class Prisoners(QRunnable):
         self.elitist = data[17]
         self.num_of_runs = data[18]
         self.seed = data[19]
+        if self.seed == '': self.seed = random.randrange(maxrange)
         self.freq_gen_start = data[20]
         self.delta_freq = data[21]
         self.debug = data[22]
         self.directory = tempfile.TemporaryDirectory()
         self.strategies = self.directory.name + '\\strat.txt'
+        if self.num_of_runs == 1 and self.players == 2:
+            self.createResult1()
+            self.createResult2()
+            self.createResult3()
+
+    def createResult1(self):
+        with open('.\\RESULTS\\result_1.txt', 'w') as file:
+            file.write('# 2pPD\n')
+            file.write('# C C %d %d\n' % (self.payments[0], self.payments[1]))
+            file.write('# C D %d %d\n' % (self.payments[2], self.payments[3]))
+            file.write('# D C %d %d\n' % (self.payments[4], self.payments[5]))
+            file.write('# D D %d %d\n' % (self.payments[6], self.payments[7]))
+            file.write('# prob_of_init_C = %f\n' % self.prob_of_init_C)
+            file.write('# num_of_tournaments = %d\n' % self.num_of_tournaments)
+            file.write('# num_of_opponents = %d\n' % self.num_of_opponents)
+            file.write('# prehistory l = %d\n' % self.prehistory_l)
+            file.write('# pop_size = %d\n' % self.pop_size)
+            file.write('# num_of_generations = %d\n' % self.num_of_generations)
+            file.write('# tournament_size = %d\n' % self.tournament_size)
+            file.write('# crossover_prob = %f\n' % self.crossover_prob)
+            file.write('# mutation_prob = %f\n' % self.mutation_prob)
+            if self.elitist == True: file.write('# elitist_strategy = True\n')
+            else: file.write('# elitist_strategy = False\n')
+            file.write('# num_of_runs = %d\n' % self.num_of_runs)
+            file.write('# seed = %d\n' % self.seed)
+            file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
+            file.write('# delta_freq = %d\n' % self.delta_freq)
+            file.write('#  1\t2\t\t3\n')
+            file.write('# gen\tbest_fit\tavg_fit\n')
+
+    def createResult2(self):
+        with open('.\\RESULTS\\result_2.txt', 'w') as file:
+            file.write('# 2pPD\n')
+            file.write('# C C %d %d\n' % (self.payments[0], self.payments[1]))
+            file.write('# C D %d %d\n' % (self.payments[2], self.payments[3]))
+            file.write('# D C %d %d\n' % (self.payments[4], self.payments[5]))
+            file.write('# D D %d %d\n' % (self.payments[6], self.payments[7]))
+            file.write('# prob_of_init_C = %f\n' % self.prob_of_init_C)
+            file.write('# num_of_tournaments = %d\n' % self.num_of_tournaments)
+            file.write('# num_of_opponents = %d\n' % self.num_of_opponents)
+            file.write('# prehistory l = %d\n' % self.prehistory_l)
+            file.write('# pop_size = %d\n' % self.pop_size)
+            file.write('# num_of_generations = %d\n' % self.num_of_generations)
+            file.write('# tournament_size = %d\n' % self.tournament_size)
+            file.write('# crossover_prob = %f\n' % self.crossover_prob)
+            file.write('# mutation_prob = %f\n' % self.mutation_prob)
+            if self.elitist == True: file.write('# elitist_strategy = True\n')
+            else: file.write('# elitist_strategy = False\n')
+            file.write('# num_of_runs = %d\n' % self.num_of_runs)
+            file.write('# seed = %d\n' % self.seed)
+            file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
+            file.write('# delta_freq = %d\n' % self.delta_freq)
+
+    def createResult3(self):
+        with open('.\\RESULTS\\result_3.txt', 'w') as file:
+            file.write('# 2pPD\n')
+            file.write('# C C %d %d\n' % (self.payments[0], self.payments[1]))
+            file.write('# C D %d %d\n' % (self.payments[2], self.payments[3]))
+            file.write('# D C %d %d\n' % (self.payments[4], self.payments[5]))
+            file.write('# D D %d %d\n' % (self.payments[6], self.payments[7]))
+            file.write('# prob_of_init_C = %f\n' % self.prob_of_init_C)
+            file.write('# num_of_tournaments = %d\n' % self.num_of_tournaments)
+            file.write('# num_of_opponents = %d\n' % self.num_of_opponents)
+            file.write('# prehistory l = %d\n' % self.prehistory_l)
+            file.write('# pop_size = %d\n' % self.pop_size)
+            file.write('# num_of_generations = %d\n' % self.num_of_generations)
+            file.write('# tournament_size = %d\n' % self.tournament_size)
+            file.write('# crossover_prob = %f\n' % self.crossover_prob)
+            file.write('# mutation_prob = %f\n' % self.mutation_prob)
+            if self.elitist == True: file.write('# elitist_strategy = True\n')
+            else: file.write('# elitist_strategy = False\n')
+            file.write('# num_of_runs = %d\n' % self.num_of_runs)
+            file.write('# seed = %d\n' % self.seed)
+            file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
+            file.write('# delta_freq = %d\n' % self.delta_freq)
 
     def clearFileName(self):
         global filename
@@ -106,7 +183,6 @@ class Prisoners(QRunnable):
                 self.prehistory = [int(self.prehistory[i]) for i in range(len(self.prehistory))]
             self.clearFileName()
         elif self.players == 2 and self.pop_size > 3:
-            if self.seed == '': self.seed = random.randrange(maxrange)
             rng = random.Random(self.seed)
             with open(self.strategies, 'w') as file:
                 for i in range(self.pop_size):
@@ -117,7 +193,6 @@ class Prisoners(QRunnable):
                     file.write('\n')
             self.prehistory = [rng.randint(0, 1) for i in range(self.prehistory_l)]
         elif self.players != 2 and self.pop_size > 4:
-            if self.seed == '': self.seed = random.randrange(maxrange)
             rng = random.Random(self.seed)
             with open(self.strategies, 'w') as file:
                 for i in range(self.pop_size):
@@ -231,6 +306,14 @@ class Prisoners(QRunnable):
         self.gener_history_freq[self.strat_id_1 - 1] += 1
         self.gener_history_freq[self.strat_id_2 - 1] += 1
         self.history_freq = [0 for i in range(len(self.P1_strat))]
+        if self.num_of_runs == 1:
+            with open('.\\RESULTS\\result_2.txt', 'a') as file:
+                file.write('#\tfrequency of game histories\n')
+                file.write('# ' + '\t'.join([str(i) for i in range(len(self.P1_strat) + 1)]))
+                file.write('\n# gen\t' + '\t'.join([str(i) for i in range(len(self.P1_strat))]) + '\n')
+            with open('.\\RESULTS\\result_3.txt', 'a') as file:
+                file.write('#\tbest strategy\n')
+                file.write('# gen\t' + '\t'.join([str(i) for i in range(len(self.P1_strat))]) + '\n')
 
     def inic_players_NpPD(self):
         for i in range(self.players):
@@ -261,10 +344,10 @@ class Prisoners(QRunnable):
                 self.payoff_P2 = self.payments[1]
             elif self.curr_action_P1 == 1:
                 self.payoff_P1 = self.payments[2]
-                self.payoff_P2 = self.payments[4]
-            elif self.curr_action_P2 == 1:
-                self.payoff_P1 = self.payments[5]
                 self.payoff_P2 = self.payments[3]
+            elif self.curr_action_P2 == 1:
+                self.payoff_P1 = self.payments[4]
+                self.payoff_P2 = self.payments[5]
             else:
                 self.payoff_P1 = self.payments[6]
                 self.payoff_P2 = self.payments[7]
@@ -285,6 +368,34 @@ class Prisoners(QRunnable):
             self.gener_history_freq[self.strat_id_2 - 1] += 1
             if self.debug == True: self.writeData3(i + 1)
 
+    def fitnessStatistics(self):
+        for i in range(self.pop_size):
+            self.fitness[i] = self.SUM_with_opponents[i] / (self.num_of_tournaments * self.c_of_opponents[i])
+        self.best_fit = max(self.fitness)
+        self.avg_fit = mean(self.fitness)
+        self.SUM_gen_hist_freq = 0
+        if self.players == 2:
+            for i in range(len(self.P1_strat)):
+                self.SUM_gen_hist_freq += self.gener_history_freq[i]
+            for i in range(len(self.P1_strat)):
+                self.history_freq[i] = self.gener_history_freq[i] / self.SUM_gen_hist_freq
+        else:
+            pass
+        if self.players == 2:
+            with open('.\\RESULTS\\result_1.txt', 'a') as file:
+                file.write('  %d\t%.2f\t\t%.2f\n' % (self.gen, self.best_fit, self.avg_fit))
+            with open('.\\RESULTS\\result_2.txt', 'a') as file:
+                file.write('  %d\t' % self.gen)
+                file.write('\t'.join([str(round(self.history_freq[i], 2)) for i in range(len(self.history_freq))]) + '\n')
+            with open('.\\RESULTS\\result_3.txt', 'a') as file:
+                file.write('  %d\t' % self.gen)
+                with open(self.strategies, 'r') as file2:
+                    line = '\t'.join(file2.readlines()[self.fitness.index(self.best_fit)].split(' '))
+                    file.write(line + '\n')
+        else:
+            pass
+
+
     @Slot()
     def run(self):
         self.gen = 0
@@ -294,5 +405,6 @@ class Prisoners(QRunnable):
         else: self.functions_NPD()
         if self.players == 2 and self.pop_size == 2:
             self.tournament2PD()
+            self.fitnessStatistics()
         elif self.players == 2 and self.pop_size > 2: pass
         else: pass

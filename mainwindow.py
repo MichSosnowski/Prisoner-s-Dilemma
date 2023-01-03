@@ -127,7 +127,7 @@ class MainWindow(QMainWindow):
         self.dialog.textEdit.append(data)
 
     def showFileDialog(self, title):
-        prisoners.filename = QFileDialog.getOpenFileName(self, title, '.', 'Text files (*.txt)')
+        prisoners.filename = QFileDialog.getOpenFileName(self, title, '.\\DATA', 'Text files (*.txt)')
 
     def start(self):
         players = 2
