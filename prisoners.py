@@ -4,7 +4,7 @@
 
 from PySide6.QtCore import QObject, QRunnable, Slot, Signal
 from statistics import mean
-import tempfile, random, sys
+import random, sys, math
 
 maxrange = 9999999999999999                     # max range of random seed
 filename = ''                                   # name of file to open
@@ -35,8 +35,6 @@ class Prisoners(QRunnable):
         self.freq_gen_start = data[20]
         self.delta_freq = data[21]
         self.debug = data[22]
-        self.directory = tempfile.TemporaryDirectory()
-        self.strategies = self.directory.name + '\\strat.txt'
         if self.num_of_runs == 1 and self.players == 2:
             self.createResult1()
             self.createResult2()
@@ -124,87 +122,104 @@ class Prisoners(QRunnable):
         filename = filename[0]
 
     def readData(self):
+        self.strategies = []
+        self.prehistory = []
         if self.players == 2 and self.pop_size == 2:
             self.getFileName('Choose a file of strategies for 2pPD and pop_size = 2...')
-            with open(filename, 'r') as f:
-                file = open(self.strategies, 'w')
-                lines = f.readlines()[1:]
-                for line in lines: file.write(line)
-                file.close()
+            with open(filename, 'r') as file:
+                for line in file:
+                    if line.startswith('#'): continue
+                    if line.endswith('\n'): line = line[:-1]
+                    number = line.split(' ')
+                    number = '0b' + ''.join(number)
+                    self.strategies.append(int(number, 2))
             self.clearFileName()
             self.getFileName('Choose a file of prehistory for 2pPD and pop_size = 2...')
-            with open(filename, 'r') as f:
-                self.prehistory = f.readlines()[1].split()
-                self.prehistory = [int(self.prehistory[i]) for i in range(len(self.prehistory))]
+            with open(filename, 'r') as file:
+                for line in file:
+                    if line.startswith('#'): continue
+                    if line.endswith('\n'): line = line[:-1]
+                    number = line.split(' ')
+                    number = '0b' + ''.join(number)
+                    self.prehistory.append(int(number, 2))
             self.clearFileName()
         elif self.players == 2 and self.pop_size == 3:
             self.getFileName('Choose a file of strategies for 2pPD and pop_size = 3...')
-            with open(filename, 'r') as f:
-                file = open(self.strategies, 'w')
-                lines = f.readlines()[1:]
-                for line in lines: file.write(line)
-                file.close()
+            with open(filename, 'r') as file:
+                for line in file:
+                    if line.startswith('#'): continue
+                    if line.endswith('\n'): line = line[:-1]
+                    number = line.split(' ')
+                    number = '0b' + ''.join(number)
+                    self.strategies.append(int(number, 2))
             self.clearFileName()
             self.getFileName('Choose a file of prehistory for 2pPD and pop_size = 3...')
-            with open(filename, 'r') as f:
-                self.prehistory = f.readlines()[1].split()
-                self.prehistory = [int(self.prehistory[i]) for i in range(len(self.prehistory))]
+            with open(filename, 'r') as file:
+                for line in file:
+                    if line.startswith('#'): continue
+                    if line.endswith('\n'): line = line[:-1]
+                    number = line.split(' ')
+                    number = '0b' + ''.join(number)
+                    self.prehistory.append(int(number, 2))
             self.clearFileName()
         elif self.players == 3 and self.pop_size == 3:
             self.getFileName('Choose a file of strategies for 3pPD and pop_size = 3...')
-            with open(filename, 'r') as f:
-                file = open(self.strategies, 'w')
-                lines = f.readlines()[1:]
-                for line in lines: file.write(line)
-                file.close()
+            with open(filename, 'r') as file:
+                for line in file:
+                    if line.startswith('#'): continue
+                    if line.endswith('\n'): line = line[:-1]
+                    number = line.split(' ')
+                    number = '0b' + ''.join(number)
+                    self.strategies.append(int(number, 2))
             self.clearFileName()
             self.getFileName('Choose a file of prehistory for 3pPD and pop_size = 3...')
-            with open(filename, 'r') as f:
-                lines = f.readlines()[1:]
-                self.prehistory = list()
-                for line in lines:
-                    self.prehistory.extend(line.split())
-                self.prehistory = [int(self.prehistory[i]) for i in range(len(self.prehistory))]
+            with open(filename, 'r') as file:
+                for line in file:
+                    if line.startswith('#'): continue
+                    if line.endswith('\n'): line = line[:-1]
+                    number = line.split(' ')
+                    number = '0b' + ''.join(number)
+                    self.prehistory.append(int(number, 2))
             self.clearFileName()
         elif self.players == 3 and self.pop_size == 4:
             self.getFileName('Choose a file of strategies for 3pPD and pop_size = 4...')
-            with open(filename, 'r') as f:
-                file = open(self.strategies, 'w')
-                lines = f.readlines()[1:]
-                for line in lines: file.write(line)
-                file.close()
+            with open(filename, 'r') as file:
+                for line in file:
+                    if line.startswith('#'): continue
+                    if line.endswith('\n'): line = line[:-1]
+                    number = line.split(' ')
+                    number = '0b' + ''.join(number)
+                    self.strategies.append(int(number, 2))
             self.clearFileName()
             self.getFileName('Choose a file of prehistory for 3pPD and pop_size = 4...')
-            with open(filename, 'r') as f:
-                lines = f.readlines()[1:]
-                self.prehistory = list()
-                for line in lines:
-                    self.prehistory.extend(line.split())
-                self.prehistory = [int(self.prehistory[i]) for i in range(len(self.prehistory))]
+            with open(filename, 'r') as file:
+                for line in file:
+                    if line.startswith('#'): continue
+                    if line.endswith('\n'): line = line[:-1]
+                    number = line.split(' ')
+                    number = '0b' + ''.join(number)
+                    self.prehistory.append(int(number, 2))
             self.clearFileName()
         elif self.players == 2 and self.pop_size > 3:
             rng = random.Random(self.seed)
-            with open(self.strategies, 'w') as file:
-                for i in range(self.pop_size):
-                    for j in range(self.players ** self.prehistory_l):
-                        los = rng.random()
-                        if los < self.prob_of_init_C: file.write('1 ')
-                        else: file.write('0 ')
-                    file.write('\n')
-            self.prehistory = [rng.randint(0, 1) for i in range(self.prehistory_l)]
-            with open(self.strategies, 'r') as file:
-                for lines in file: print(lines)
-            print(self.prehistory)
+            for i in range(self.pop_size):
+                strategy = 0
+                r = 2 ** (2 * self.prehistory_l)
+                for j in range(r):
+                    los = rng.random()
+                    if los < self.prob_of_init_C: strategy |= (2 ** j)
+                self.strategies.append(strategy)
+            self.prehistory = rng.randint(0, r - 1)
         elif self.players != 2 and self.pop_size > 4:
             rng = random.Random(self.seed)
-            with open(self.strategies, 'w') as file:
-                for i in range(self.pop_size):
-                    for j in range(2 ** self.prehistory_l):
-                        los = rng.random()
-                        if los < self.prob_of_init_C: file.write('1 ')
-                        else: file.write('0 ')
-                    file.write('\n')
-            self.prehistory = [rng.randint(0, 1) for i in range(self.prehistory_l)]
+            for i in range(self.pop_size):
+                strategy = 0
+                r = 2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))
+                for j in range(r):
+                    los = rng.random()
+                    if los < self.prob_of_init_C: strategy |= (2 ** j)
+                self.strategies.append(strategy)
+            self.prehistory = [rng.randint(0, (2 ** self.players) - 1) for i in range(self.prehistory_l)]
 
     def writeData(self):
         if self.debug == True and self.players == 2 and self.pop_size < 4:
