@@ -4,7 +4,7 @@
 
 from PySide6.QtCore import QObject, QRunnable, Slot, Signal
 from statistics import mean
-import tempfile, random, sys
+import tempfile, random, sys, math
 
 maxrange = 9999999999999999                     # max range of random seed
 filename = ''                                   # name of file to open
@@ -186,25 +186,22 @@ class Prisoners(QRunnable):
             rng = random.Random(self.seed)
             with open(self.strategies, 'w') as file:
                 for i in range(self.pop_size):
-                    for j in range(self.players ** self.prehistory_l):
+                    for j in range(self.players ** (2 * self.prehistory_l)):
                         los = rng.random()
                         if los < self.prob_of_init_C: file.write('1 ')
                         else: file.write('0 ')
                     file.write('\n')
             self.prehistory = [rng.randint(0, 1) for i in range(self.prehistory_l)]
-            with open(self.strategies, 'r') as file:
-                for lines in file: print(lines)
-            print(self.prehistory)
         elif self.players != 2 and self.pop_size > 4:
             rng = random.Random(self.seed)
             with open(self.strategies, 'w') as file:
                 for i in range(self.pop_size):
-                    for j in range(2 ** self.prehistory_l):
+                    for j in range(2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))):
                         los = rng.random()
                         if los < self.prob_of_init_C: file.write('1 ')
                         else: file.write('0 ')
                     file.write('\n')
-            self.prehistory = [rng.randint(0, 1) for i in range(self.prehistory_l)]
+            self.prehistory = [rng.randint(0, 1) for i in range(self.prehistory_l * self.players)]
 
     def writeData(self):
         if self.debug == True and self.players == 2 and self.pop_size < 4:
