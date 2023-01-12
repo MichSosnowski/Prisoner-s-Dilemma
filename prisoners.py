@@ -191,7 +191,7 @@ class Prisoners(QRunnable):
                         if los < self.prob_of_init_C: file.write('1 ')
                         else: file.write('0 ')
                     file.write('\n')
-            self.prehistory = [rng.randint(0, 1) for i in range(self.prehistory_l)]
+            self.prehistory = [rng.randint(0, 1) for i in range(2 * self.prehistory_l)]
         elif self.players != 2 and self.pop_size > 4:
             rng = random.Random(self.seed)
             with open(self.strategies, 'w') as file:
