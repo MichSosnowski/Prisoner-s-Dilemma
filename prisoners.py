@@ -12,6 +12,8 @@ filename = ''                                   # name of file to open
 class PrisonersSignals(QObject):
     show = Signal(str)
     file = Signal(str)
+    draw1 = Signal(str)
+    draw2 = Signal(str)
 
 class Prisoners(QRunnable):
     def __init__(self, players, data):
@@ -270,7 +272,7 @@ class Prisoners(QRunnable):
         with open(self.childstrategies, 'r') as file:
             for line in file: text += line
         self.signals.show.emit(text)
-        text = 'Strategies:\n'
+        text = '\nStrategies:\n'
         with open(self.strategies, 'r') as file:
             for line in file: text += line
         self.signals.show.emit(text)
@@ -449,7 +451,9 @@ class Prisoners(QRunnable):
                 file.write('  %d\t' % self.gen)
                 with open(self.strategies, 'r') as file2:
                     line = '\t'.join(file2.readlines()[self.fitness.index(self.best_fit)].split(' '))
-                    file.write(line + '\n')
+                    file.write(line)
+            self.signals.draw1.emit('.\\RESULTS\\result_1.txt')
+            #self.signals.draw2.emit('.\\RESULTS\\result_2.txt')
         else:
             pass
 
@@ -487,6 +491,7 @@ class Prisoners(QRunnable):
 
     def GAoperators(self):
         for i in range(self.num_of_generations):
+            self.gen = i + 1
             choosed_strategies = []
             winners = []
             best_strat = ''
@@ -551,8 +556,12 @@ class Prisoners(QRunnable):
             if self.elitist == True: self.elitist_fun(best_strat)
             if self.debug == True: self.writeData4()
             with open(self.tempstrategies, 'w') as file: pass
-            if self.players == 2: self.duel2PD()
+            if self.players == 2:
+                self.c_of_opponents = [0 for i in range(self.pop_size)]
+                self.history_freq = [0 for i in range(len(self.P1_strat))]
+                self.duel2PD()
             #elif self.players != 2: self.duelNPD()
+            self.fitnessStatistics()
 
     @Slot()
     def run(self):

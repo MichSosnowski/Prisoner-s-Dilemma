@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout, QFileDialo
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QIntValidator, QDoubleValidator
 from PySide6.QtCore import QThreadPool, Qt
-import matplotlib
+import matplotlib, numpy
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 import prisoners
@@ -30,6 +30,7 @@ subplot = 111                                       # subplot for add_subplot
 titlePlot = 'average total payoff (ATP)'            # title for the first plot
 titlePlot2 = 'frequencies of applied strategies'    # title for the second plot
 fontSize = 9                                        # font size for titles of plots
+legend = 0                                          # information about legend
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -129,6 +130,32 @@ class MainWindow(QMainWindow):
     def showFileDialog(self, title):
         prisoners.filename = QFileDialog.getOpenFileName(self, title, '.\\DATA', 'Text files (*.txt)')
 
+    def drawScreen1(self, path):
+        global legend
+        results = list()
+        with open(path, 'r') as file:
+            for line in file:
+                if line.startswith('#'): continue
+                results.append([float(el) for el in line.split('\t') if el != ''])
+        gens = [results[i][0] for i in range(len(results))]
+        best = [results[i][1] for i in range(len(results))]
+        avg = [results[i][2] for i in range(len(results))]
+        self.plot.plot(gens, best, label = 'avg per best', color='orange')
+        self.plot.plot(gens, avg, label = 'avg per gens', color='blue')
+        self.plot.yaxis.set_ticks(numpy.arange(0, int(max(best)), 0.5))
+        self.plot.xaxis.set_visible(True)
+        self.plot.yaxis.set_visible(True)
+        if legend == 0: self.plot.legend(); legend += 1
+        self.layout.addWidget(self.wykres)
+
+    def drawScreen2(self, path):
+        results = list()
+        with open(path, 'r') as file:
+            for line in file:
+                if line.startswith('#'): continue
+                results.append(line.split('\t')[1:])
+        print(results)
+
     def start(self):
         players = 2
         data = [int(self.window.C1lineEdit.text()), int(self.window.C2lineEdit.text()), int(self.window.C3lineEdit.text()),
@@ -146,6 +173,8 @@ class MainWindow(QMainWindow):
         dilemma = prisoners.Prisoners(players, data)
         dilemma.signals.show.connect(self.printDebug)
         dilemma.signals.file.connect(self.showFileDialog)
+        dilemma.signals.draw1.connect(self.drawScreen1)
+        dilemma.signals.draw2.connect(self.drawScreen2)
         self.threadpool.start(dilemma)
 
 if __name__ == "__main__":
