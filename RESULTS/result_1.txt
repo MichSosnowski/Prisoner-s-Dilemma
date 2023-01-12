@@ -4,18 +4,19 @@
 # D C 50 0
 # D D 10 10
 # prob_of_init_C = 0.500000
-# num_of_tournaments = 151
+# num_of_tournaments = 10
 # num_of_opponents = 10
 # prehistory l = 3
 # pop_size = 4
-# num_of_generations = 200
+# num_of_generations = 10
 # tournament_size = 3
 # crossover_prob = 0.900000
 # mutation_prob = 0.003000
 # elitist_strategy = False
 # num_of_runs = 1
-# seed = 9017365164694236
+# seed = 9694414946215743
 # freq_gen_start = 30
 # delta_freq = 10
 #  1	2		3
 # gen	best_fit	avg_fit
+  0	2.30		1.10
