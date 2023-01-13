@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout, QFileDialo
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QIntValidator, QDoubleValidator
 from PySide6.QtCore import QThreadPool, Qt
-import matplotlib, numpy
+import matplotlib
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 import prisoners
@@ -142,7 +142,6 @@ class MainWindow(QMainWindow):
         avg = [results[i][2] for i in range(len(results))]
         self.plot.plot(gens, best, label = 'avg per best', color='orange')
         self.plot.plot(gens, avg, label = 'avg per gens', color='blue')
-        self.plot.yaxis.set_ticks(numpy.arange(0, int(max(best)), 0.5))
         self.plot.xaxis.set_visible(True)
         self.plot.yaxis.set_visible(True)
         if legend == 0: self.plot.legend(); legend += 1

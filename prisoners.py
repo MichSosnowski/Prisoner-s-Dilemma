@@ -326,8 +326,8 @@ class Prisoners(QRunnable):
         self.c_of_opponents[self.id_P1] += 1
         self.c_of_opponents[self.id_P2] += 1
         self.gener_history_freq = [0 for i in range(len(self.P1_strat))]
-        self.gener_history_freq[self.strat_id_1 - 1] += 1
-        self.gener_history_freq[self.strat_id_2 - 1] += 1
+        self.gener_history_freq[self.strat_id_1] += 1
+        self.gener_history_freq[self.strat_id_2] += 1
         self.history_freq = [0 for i in range(len(self.P1_strat))]
         if self.num_of_runs == 1:
             with open('.\\RESULTS\\result_2.txt', 'a') as file:
@@ -360,8 +360,8 @@ class Prisoners(QRunnable):
 
     def tournament2PD(self):
         for i in range(self.num_of_tournaments):
-            self.curr_action_P1 = self.P1_strat[self.strat_id_1 - 1]
-            self.curr_action_P2 = self.P2_strat[self.strat_id_2 - 1]
+            self.curr_action_P1 = self.P1_strat[self.strat_id_1]
+            self.curr_action_P2 = self.P2_strat[self.strat_id_2]
             if self.curr_action_P1 * self.curr_action_P2 == 1:
                 self.payoff_P1 = self.payments[0]
                 self.payoff_P2 = self.payments[1]
@@ -387,8 +387,8 @@ class Prisoners(QRunnable):
                 if j >= len(self.P1_preh): break
             self.strat_id_1 = self.toDecimal(self.P1_preh)
             self.strat_id_2 = self.toDecimal(self.P2_preh)
-            self.gener_history_freq[self.strat_id_1 - 1] += 1
-            self.gener_history_freq[self.strat_id_2 - 1] += 1
+            self.gener_history_freq[self.strat_id_1] += 1
+            self.gener_history_freq[self.strat_id_2] += 1
             if self.debug == True: self.writeData3(i + 1)
 
     def duel2PD(self):
@@ -424,8 +424,8 @@ class Prisoners(QRunnable):
                 self.strat_id_2 = self.toDecimal(self.P2_preh)
                 self.c_of_opponents[self.id_P1] += 1
                 self.c_of_opponents[self.id_P2] += 1
-                self.gener_history_freq[self.strat_id_1 - 1] += 1
-                self.gener_history_freq[self.strat_id_2 - 1] += 1
+                self.gener_history_freq[self.strat_id_1] += 1
+                self.gener_history_freq[self.strat_id_2] += 1
         if self.debug == True: self.writeData2()
 
     def fitnessStatistics(self):
@@ -452,6 +452,7 @@ class Prisoners(QRunnable):
                 with open(self.strategies, 'r') as file2:
                     line = '\t'.join(file2.readlines()[self.fitness.index(self.best_fit)].split(' '))
                     file.write(line)
+                    if line.endswith('\n') == False: file.write('\n')
             self.signals.draw1.emit('.\\RESULTS\\result_1.txt')
             #self.signals.draw2.emit('.\\RESULTS\\result_2.txt')
         else:
@@ -544,7 +545,7 @@ class Prisoners(QRunnable):
                             strat1 = ''
                             strat2 = ''
                     j += 1
-                if strat1 != '': children.write(' '.join(list(strat1))); strat1 = ''
+                if strat1 != '': children.write(' '.join(list(strat1)) + '\n'); strat1 = ''
                 children.close()
             # mutation
             with open(self.strategies, 'w') as file:
