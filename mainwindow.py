@@ -7,9 +7,10 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout, QFileDialo
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QIntValidator, QDoubleValidator
 from PySide6.QtCore import QThreadPool, Qt
-import matplotlib
+import matplotlib, numpy
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
+from scipy.interpolate import interp1d
 import prisoners
 
 matplotlib.use('Qt5Agg')
@@ -136,7 +137,7 @@ class MainWindow(QMainWindow):
         with open(path, 'r') as file:
             for line in file:
                 if line.startswith('#'): continue
-                results.append([float(el) for el in line.split('\t') if el != ''])
+                results.append([float(el) for el in line.split(' ') if el != ''])
         gens = [results[i][0] for i in range(len(results))]
         best = [results[i][1] for i in range(len(results))]
         avg = [results[i][2] for i in range(len(results))]
@@ -147,13 +148,23 @@ class MainWindow(QMainWindow):
         if legend == 0: self.plot.legend(); legend += 1
         self.layout.addWidget(self.wykres)
 
-    def drawScreen2(self, path):
+    def drawScreen2(self, path, gen):
         results = list()
         with open(path, 'r') as file:
             for line in file:
                 if line.startswith('#'): continue
-                results.append(line.split('\t')[1:])
-        print(results)
+                results.append(float(''.join(line.split()[1:])))
+        history = [i for i in range(len(results))]
+        f = interp1d(history, results, kind='cubic')
+        xnew = numpy.linspace(history[0], history[-1], num = 500, endpoint=True)
+        elems = f(xnew)
+        for i in range(len(elems)):
+            if elems[i] < 0: elems[i] = 0
+        self.plot2.plot(xnew, elems, label = ('gen %d' % gen))
+        self.plot2.xaxis.set_visible(True)
+        self.plot2.yaxis.set_visible(True)
+        self.plot2.legend()
+        self.layout2.addWidget(self.wykres2)
 
     def start(self):
         players = 2
