@@ -83,14 +83,14 @@ class MainWindow(QMainWindow):
         self.window.deltalineEdit.setValidator(QIntValidator(bottom, top))
 
     def showPlots(self):
-        self.fig = Figure(tight_layout=True, facecolor=color)
+        self.fig = Figure(facecolor=color)
         self.plot = self.fig.add_subplot(subplot)
         self.plot.plot([])
         self.plot.xaxis.set_visible(False)
         self.plot.yaxis.set_visible(False)
         self.plot.set_title(titlePlot, fontsize=fontSize)
 
-        self.fig2 = Figure(tight_layout=True, facecolor=color)
+        self.fig2 = Figure(facecolor=color)
         self.plot2 = self.fig2.add_subplot(subplot)
         self.plot2.plot([])
         self.plot2.xaxis.set_visible(False)
@@ -166,7 +166,23 @@ class MainWindow(QMainWindow):
         self.plot2.legend()
         self.layout2.addWidget(self.wykres2)
 
+    def clearScreens(self):
+        global legend
+        legend = 0
+        self.plot.cla()
+        self.plot.plot([])
+        self.plot.xaxis.set_visible(False)
+        self.plot.yaxis.set_visible(False)
+        self.plot.set_title(titlePlot, fontsize=fontSize)
+        self.plot2.cla()
+        self.plot2.plot([])
+        self.plot2.xaxis.set_visible(False)
+        self.plot2.yaxis.set_visible(False)
+        self.plot2.set_title(titlePlot2, fontsize=fontSize)
+
     def start(self):
+        self.window.pushButton.setEnabled(False)
+        self.clearScreens()
         players = 2
         data = [int(self.window.C1lineEdit.text()), int(self.window.C2lineEdit.text()), int(self.window.C3lineEdit.text()),
                 int(self.window.D1lineEdit.text()), int(self.window.D2lineEdit.text()), int(self.window.C4lineEdit.text()),
@@ -185,6 +201,7 @@ class MainWindow(QMainWindow):
         dilemma.signals.file.connect(self.showFileDialog)
         dilemma.signals.draw1.connect(self.drawScreen1)
         dilemma.signals.draw2.connect(self.drawScreen2)
+        dilemma.signals.end.connect(lambda: self.window.pushButton.setEnabled(True))
         self.threadpool.start(dilemma)
 
 if __name__ == "__main__":

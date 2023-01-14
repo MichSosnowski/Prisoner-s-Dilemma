@@ -14,6 +14,7 @@ class PrisonersSignals(QObject):
     file = Signal(str)
     draw1 = Signal(str)
     draw2 = Signal(str, int)
+    end = Signal()
 
 class Prisoners(QRunnable):
     def __init__(self, players, data):
@@ -624,3 +625,4 @@ class Prisoners(QRunnable):
             #self.duelNPD()
             #self.fitnessStatistics()
             #self.GAoperators()
+        self.signals.end.emit()
