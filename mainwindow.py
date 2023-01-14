@@ -10,7 +10,7 @@ from PySide6.QtCore import QThreadPool, Qt
 import matplotlib, numpy
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
-from scipy.interpolate import interp1d
+from scipy.interpolate import pchip
 import prisoners
 
 matplotlib.use('Qt5Agg')
@@ -155,7 +155,7 @@ class MainWindow(QMainWindow):
                 if line.startswith('#'): continue
                 results.append(float(''.join(line.split()[1:])))
         history = [i for i in range(len(results))]
-        f = interp1d(history, results, kind='cubic')
+        f = pchip(history, results)
         xnew = numpy.linspace(history[0], history[-1], num = 500, endpoint=True)
         elems = f(xnew)
         for i in range(len(elems)):
