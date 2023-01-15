@@ -286,7 +286,7 @@ class Prisoners(QRunnable):
         self.gener_history_freq = list()
         self.P1_strat = list()
         self.P2_strat = list()
-        self.history_freq = list()
+        self.history_freq = [0 for i in range(4 ** self.prehistory_l)]
         self.fitness = [0 for i in range(self.pop_size)]
 
     def ZERO_NPD_structures(self):
@@ -305,7 +305,7 @@ class Prisoners(QRunnable):
 
     def toDecimal(self, data):
         data = [str(data[i]) for i in range(len(data))]
-        data = '0b' + ''.join(data)
+        data = ''.join(data)
         return int(data, 2)
 
     def inic_players_2pPD(self):
@@ -329,8 +329,8 @@ class Prisoners(QRunnable):
         self.c_of_opponents[self.id_P1] += 1
         self.c_of_opponents[self.id_P2] += 1
         self.gener_history_freq = [0 for i in range(len(self.P1_strat))]
-        self.gener_history_freq[self.strat_id_1] += 1
-        self.gener_history_freq[self.strat_id_2] += 1
+        #self.gener_history_freq[self.strat_id_1] += 1
+        #self.gener_history_freq[self.strat_id_2] += 1
         self.history_freq = [0 for i in range(len(self.P1_strat))]
         if self.num_of_runs == 1:
             with open('.\\RESULTS\\result_2.txt', 'a') as file:
@@ -403,10 +403,10 @@ class Prisoners(QRunnable):
             if self.min == self.num_of_opponents: self.duel_fulfilment = True
             else:
                 temp = self.c_of_opponents
-                temp1 = self.history_freq
+                temp1 = self.SUM_with_opponents
                 self.ZERO_2PD_structures()
                 self.c_of_opponents = temp
-                self.history_freq = temp1
+                self.SUM_with_opponents = temp1
                 self.id_P1 = self.id
                 self.id_P2 = self.rng.randint(0, self.pop_size - 1)
                 while self.id_P2 == self.id_P1: self.id_P2 = self.rng.randint(0, self.pop_size - 1)
@@ -427,8 +427,8 @@ class Prisoners(QRunnable):
                 self.strat_id_2 = self.toDecimal(self.P2_preh)
                 self.c_of_opponents[self.id_P1] += 1
                 self.c_of_opponents[self.id_P2] += 1
-                self.gener_history_freq[self.strat_id_1] += 1
-                self.gener_history_freq[self.strat_id_2] += 1
+                #self.gener_history_freq[self.strat_id_1] += 1
+                #self.gener_history_freq[self.strat_id_2] += 1
         if self.debug == True: self.writeData2()
 
     def fitnessStatistics(self):
@@ -493,6 +493,14 @@ class Prisoners(QRunnable):
         else:
             pass
 
+    def tournament_fun(self):
+        winner = None
+        for i in range(self.tournament_size):
+            ind = self.rng.randint(0, self.pop_size - 1)
+            if winner == None or self.fitness[ind] > self.fitness[winner]:
+                winner = ind
+        return winner
+
     def crossover_fun(self, strat1, strat2):
         los = self.rng.randint(1, (len(strat1) - 1))
         return (strat1[:los] + strat2[los:], strat2[:los] + strat1[los:])
@@ -529,29 +537,14 @@ class Prisoners(QRunnable):
     def GAoperators(self):
         for i in range(self.num_of_generations):
             self.gen = i + 1
-            choosed_strategies = []
             winners = []
             best_strat = ''
             with open(self.strategies, 'r') as file:
                 best = self.fitness.index(max(self.fitness))
-                i = 0
-                for line in file:
-                    if i == best:
-                        best_strat = line
-                        break
-                    i += 1
+                best_strat = file.readlines()[best]
             # tournament selection
             for j in range(self.pop_size):
-                for k in range(self.tournament_size):
-                    los = self.rng.randint(0, self.pop_size - 1)
-                    if len(choosed_strategies) == 0: choosed_strategies.append(los)
-                    else:
-                        while (los in choosed_strategies) == True: los = self.rng.randint(0, self.pop_size - 1)
-                        choosed_strategies.append(los)
-                choosed_strategies.sort()
-                fitnesses = [self.fitness[i] for i in choosed_strategies]
-                max_fitness = max(fitnesses)
-                winner = choosed_strategies[fitnesses.index(max_fitness)]
+                winner = self.tournament_fun()
                 if (winner in winners) == False: winners.append(winner)
                 with open(self.tempstrategies, 'a') as file:
                     strat = open(self.strategies, 'r')
@@ -559,7 +552,6 @@ class Prisoners(QRunnable):
                     if line.endswith('\n') == False: file.write(line + '\n')
                     else: file.write(line)
                     strat.close()
-                choosed_strategies.clear()
             # crossover
             self.parents_strategies = [0 for i in range(self.pop_size)]
             for j in range(len(self.parents_strategies)):
@@ -568,25 +560,29 @@ class Prisoners(QRunnable):
                     if los < self.crossover_prob: self.parents_strategies[j] = 1
             strat1 = ''
             strat2 = ''
-            with open(self.strategies, 'r') as file:
-                children = open(self.childstrategies, 'w')
-                j = 0
-                for line in file:
-                    if self.parents_strategies[j] == 0:
-                        if line.endswith('\n') == True: children.write(line)
-                        else: children.write(line + '\n')
-                    elif self.parents_strategies[j] == 1:
-                        if strat1 == '': strat1 = ''.join(line.split())
-                        elif strat2 == '': strat2 = ''.join(line.split())
-                        if strat1 != '' and strat2 != '':
-                            (strat1, strat2) = self.crossover_fun(strat1, strat2)
-                            children.write(' '.join(list(strat1)) + '\n')
-                            children.write(' '.join(list(strat2)) + '\n')
-                            strat1 = ''
-                            strat2 = ''
-                    j += 1
-                if strat1 != '': children.write(' '.join(list(strat1)) + '\n'); strat1 = ''
-                children.close()
+            new_pop_size = 0
+            while new_pop_size != self.pop_size:
+                with open(self.strategies, 'r') as file:
+                    children = open(self.childstrategies, 'a')
+                    chosen = self.rng.randint(0, (len(self.parents_strategies) - 1))
+                    while self.parents_strategies[chosen] != 1: chosen = self.rng.randint(0, (len(self.parents_strategies) - 1))
+                    chosen2 = self.rng.randint(0, (len(self.parents_strategies) - 1))
+                    while self.parents_strategies[chosen2] != 1 or chosen2 == chosen:
+                        chosen2 = self.rng.randint(0, (len(self.parents_strategies) - 1))
+                    strat1 = ''.join(file.readlines()[chosen].split())
+                    file.seek(0)
+                    strat2 = ''.join(file.readlines()[chosen2].split())
+                    (strat1, strat2) = self.crossover_fun(strat1, strat2)
+                    children.write(' '.join(list(strat1)) + '\n')
+                    children.write(' '.join(list(strat2)) + '\n')
+                    new_pop_size += 2
+                    if new_pop_size == (self.pop_size - 1):
+                        chosen = self.rng.randint(0, (len(self.parents_strategies) - 1))
+                        while self.parents_strategies[chosen] != 1: chosen = self.rng.randint(0, (len(self.parents_strategies) - 1))
+                        file.seek(0)
+                        children.write(file.readlines()[chosen])
+                        new_pop_size += 1
+                    children.close()
             # mutation
             with open(self.strategies, 'w') as file:
                 children = open(self.childstrategies, 'r')
@@ -599,7 +595,9 @@ class Prisoners(QRunnable):
             if self.elitist == True: self.elitist_fun(best_strat)
             if self.debug == True: self.writeData4()
             with open(self.tempstrategies, 'w') as file: pass
+            with open(self.childstrategies, 'w') as file: pass
             if self.players == 2:
+                self.SUM_with_opponents = [0 for i in range(self.pop_size)]
                 self.c_of_opponents = [0 for i in range(self.pop_size)]
                 self.history_freq = [0 for i in range(len(self.P1_strat))]
                 self.duel2PD()
