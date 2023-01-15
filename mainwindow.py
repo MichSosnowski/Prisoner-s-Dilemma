@@ -82,14 +82,14 @@ class MainWindow(QMainWindow):
         self.window.deltalineEdit.setValidator(QIntValidator(bottom, top))
 
     def showPlots(self):
-        self.fig = Figure(facecolor=color)
+        self.fig = Figure(tight_layout = True, facecolor=color)
         self.plot = self.fig.add_subplot(subplot)
         self.plot.plot([])
         self.plot.xaxis.set_visible(False)
         self.plot.yaxis.set_visible(False)
         self.plot.set_title(titlePlot, fontsize=fontSize)
 
-        self.fig2 = Figure(facecolor=color)
+        self.fig2 = Figure(tight_layout = True, facecolor=color)
         self.plot2 = self.fig2.add_subplot(subplot)
         self.plot2.plot([])
         self.plot2.xaxis.set_visible(False)
@@ -141,11 +141,12 @@ class MainWindow(QMainWindow):
         avg = [results[i][2] for i in range(len(results))]
         self.plot.clear()
         self.plot.set_title(titlePlot, fontsize=fontSize)
-        self.plot.plot(gens, best, label = 'avg per best', color='orange')
-        self.plot.plot(gens, avg, label = 'avg per gens', color='blue')
+        self.plot.plot(gens, best, label = 'average total payoff of best indiv', color='orange')
+        self.plot.plot(gens, avg, label = 'average payoff of the population', color='blue')
         self.plot.xaxis.set_visible(True)
         self.plot.yaxis.set_visible(True)
-        self.plot.legend()
+        self.plot.set_xlabel('generations')
+        self.plot.legend(fontsize = 8)
         self.wykres.draw()
 
     def drawScreen2(self, path, gen):
@@ -163,7 +164,8 @@ class MainWindow(QMainWindow):
         self.plot2.plot(xnew, elems, label = ('gen %d' % gen))
         self.plot2.xaxis.set_visible(True)
         self.plot2.yaxis.set_visible(True)
-        self.plot2.legend()
+        self.plot2.set_xlabel('strategies')
+        self.plot2.legend(fontsize = 8)
         self.wykres2.draw()
 
     def clearScreens(self):
