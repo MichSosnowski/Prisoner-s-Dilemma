@@ -31,7 +31,6 @@ subplot = 111                                       # subplot for add_subplot
 titlePlot = 'average total payoff (ATP)'            # title for the first plot
 titlePlot2 = 'frequencies of applied strategies'    # title for the second plot
 fontSize = 9                                        # font size for titles of plots
-legend = 0                                          # information about legend
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -132,7 +131,6 @@ class MainWindow(QMainWindow):
         prisoners.filename = QFileDialog.getOpenFileName(self, title, '.\\DATA', 'Text files (*.txt)')
 
     def drawScreen1(self, path):
-        global legend
         results = list()
         with open(path, 'r') as file:
             for line in file:
@@ -141,12 +139,14 @@ class MainWindow(QMainWindow):
         gens = [results[i][0] for i in range(len(results))]
         best = [results[i][1] for i in range(len(results))]
         avg = [results[i][2] for i in range(len(results))]
+        self.plot.clear()
+        self.plot.set_title(titlePlot, fontsize=fontSize)
         self.plot.plot(gens, best, label = 'avg per best', color='orange')
         self.plot.plot(gens, avg, label = 'avg per gens', color='blue')
         self.plot.xaxis.set_visible(True)
         self.plot.yaxis.set_visible(True)
-        if legend == 0: self.plot.legend(); legend += 1
-        self.layout.addWidget(self.wykres)
+        self.plot.legend()
+        self.wykres.draw()
 
     def drawScreen2(self, path, gen):
         results = list()
@@ -164,17 +164,17 @@ class MainWindow(QMainWindow):
         self.plot2.xaxis.set_visible(True)
         self.plot2.yaxis.set_visible(True)
         self.plot2.legend()
-        self.layout2.addWidget(self.wykres2)
+        self.wykres2.draw()
 
     def clearScreens(self):
         global legend
         legend = 0
-        self.plot.cla()
+        self.plot.clear()
         self.plot.plot([])
         self.plot.xaxis.set_visible(False)
         self.plot.yaxis.set_visible(False)
         self.plot.set_title(titlePlot, fontsize=fontSize)
-        self.plot2.cla()
+        self.plot2.clear()
         self.plot2.plot([])
         self.plot2.xaxis.set_visible(False)
         self.plot2.yaxis.set_visible(False)
