@@ -46,6 +46,9 @@ class Prisoners(QRunnable):
         self.childstrategies = self.directory.name + '\\childstrat.txt'
         self.Nstrategies = self.directory.name + '\\Nstrat.txt'
         files = glob.glob('.\\RESULTS\\*')
+        if len(files) == 0:
+            os.mkdir('.\\RESULTS')
+            files = glob.glob('.\\RESULTS\\*')
         for file in files: os.remove(file)
         if self.num_of_runs == 1 and self.players == 2:
             self.createResult1()
@@ -303,7 +306,6 @@ class Prisoners(QRunnable):
             text += str(self.history_id[i]) + '\t\t' + str(self.tournaments[i][0]) + '\t\t' + str(self.tournaments[i][1]) + '\t\t' + str(self.tournaments[i][0] + self.tournaments[i][1])
             self.signals.show.emit(text)
             text = ''
-        exit()
 
     def ZERO_2PD_structures(self):
         self.SUM_with_opponents = [0 for i in range(self.pop_size)]
