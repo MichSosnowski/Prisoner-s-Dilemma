@@ -303,7 +303,6 @@ class Prisoners(QRunnable):
             text += str(self.history_id[i]) + '\t\t' + str(self.tournaments[i][0]) + '\t\t' + str(self.tournaments[i][1]) + '\t\t' + str(self.tournaments[i][0] + self.tournaments[i][1])
             self.signals.show.emit(text)
             text = ''
-        exit()
 
     def ZERO_2PD_structures(self):
         self.SUM_with_opponents = [0 for i in range(self.pop_size)]
