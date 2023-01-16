@@ -176,11 +176,13 @@ class MainWindow(QMainWindow):
         self.plot.xaxis.set_visible(False)
         self.plot.yaxis.set_visible(False)
         self.plot.set_title(titlePlot, fontsize=fontSize)
+        self.wykres.draw()
         self.plot2.clear()
         self.plot2.plot([])
         self.plot2.xaxis.set_visible(False)
         self.plot2.yaxis.set_visible(False)
         self.plot2.set_title(titlePlot2, fontsize=fontSize)
+        self.wykres2.draw()
 
     def start(self):
         self.window.pushButton.setEnabled(False)

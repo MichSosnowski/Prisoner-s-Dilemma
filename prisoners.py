@@ -4,7 +4,7 @@
 
 from PySide6.QtCore import QObject, QRunnable, Slot, Signal
 from statistics import mean
-import tempfile, random, sys, math, os, glob
+import tempfile, random, math, os, glob
 
 maxrange = 9999999999999999                     # max range of random seed
 filename = ''                                   # name of file to open
@@ -44,6 +44,7 @@ class Prisoners(QRunnable):
         self.strategies = self.directory.name + '\\strat.txt'
         self.tempstrategies = self.directory.name + '\\tempstrat.txt'
         self.childstrategies = self.directory.name + '\\childstrat.txt'
+        self.Nstrategies = self.directory.name + '\\Nstrat.txt'
         files = glob.glob('.\\RESULTS\\*')
         for file in files: os.remove(file)
         if self.num_of_runs == 1 and self.players == 2:
@@ -172,8 +173,8 @@ class Prisoners(QRunnable):
                 lines = f.readlines()[1:]
                 self.prehistory = list()
                 for line in lines:
-                    self.prehistory.extend(line.split())
-                self.prehistory = [int(self.prehistory[i]) for i in range(len(self.prehistory))]
+                    self.prehistory.append(line.split())
+                self.prehistory = [[int(self.prehistory[i][j]) for j in range(len(self.prehistory[i]))] for i in range(len(self.prehistory))]
             self.clearFileName()
         elif self.players == 3 and self.pop_size == 4:
             self.getFileName('Choose a file of strategies for 3pPD and pop_size = 4...')
@@ -188,8 +189,8 @@ class Prisoners(QRunnable):
                 lines = f.readlines()[1:]
                 self.prehistory = list()
                 for line in lines:
-                    self.prehistory.extend(line.split())
-                self.prehistory = [int(self.prehistory[i]) for i in range(len(self.prehistory))]
+                    self.prehistory.append(line.split())
+                self.prehistory = [[int(self.prehistory[i][j]) for j in range(len(self.prehistory[i]))] for i in range(len(self.prehistory))]
             self.clearFileName()
         elif self.players == 2 and self.pop_size > 3:
             with open(self.strategies, 'w') as file:
@@ -208,7 +209,7 @@ class Prisoners(QRunnable):
                         if los < self.prob_of_init_C: file.write('1 ')
                         else: file.write('0 ')
                     file.write('\n')
-            self.prehistory = [self.rng.randint(0, 1) for i in range(self.prehistory_l * self.players)]
+            self.prehistory = [[self.rng.randint(0, 1) for j in range(self.players)] for i in range(self.prehistory_l)]
 
     def writeData(self):
         if self.debug == True and self.players == 2 and self.pop_size < 4:
@@ -223,7 +224,10 @@ class Prisoners(QRunnable):
             with open(self.strategies, 'r') as file:
                 for line in file: text += line
             text += '\n\nPrehistory_N:\n'
-            text += ' '.join([str(self.prehistory[i]) for i in range(len(self.prehistory))])
+            for i in range(len(self.prehistory)):
+                for j in range(len(self.prehistory[i])):
+                    text += str(self.prehistory[i][j]) + ' '
+                text += '\n'
             self.signals.show.emit(text)
 
     def writeData2(self):
@@ -291,8 +295,7 @@ class Prisoners(QRunnable):
 
     def ZERO_NPD_structures(self):
         self.id_N_players = [0 for i in range(self.players)]
-        self.N_players_strategies = [0 for i in range(self.players)]
-        self.N_players_preh = [0 for i in range(self.players)]
+        self.N_players_preh = [[0 for j in range(self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))] for i in range(self.players)]
         self.curr_action_N_players = [0 for i in range(self.players)]
         self.num_of_c_neighb_N_players = [0 for i in range(self.players)]
         self.payoff_N_players = [0 for i in range(self.players)]
@@ -341,15 +344,37 @@ class Prisoners(QRunnable):
                 file.write('# best strategy\n')
                 file.write('# gen ' + ' '.join([str(i) for i in range(len(self.P1_strat))]) + '\n')
 
+    def set_N_players_preh(self):
+        k = 0
+        for i in range(self.prehistory_l):
+            for j in range(self.players):
+                self.N_players_preh[j][k] = self.prehistory[i][j]
+            k += math.ceil(math.log2(self.players)) + 1
+        coops = []
+        for i in range(self.players):
+            for j in range(self.prehistory_l):
+                coops.append(sum(self.prehistory[j]))
+                if self.prehistory[i][j] == 1: coops[j] -= 1
+            coops = [bin(coops[i])[2:] for i in range(len(coops))]
+            print(coops)
+            exit()
+            place = 1
+            for j in range(1, self.N_players_preh[i]):
+                if j == (place + math.ceil(math.log2(self.players))):
+                    place += math.ceil(math.log2(self.players))
+                    continue
+            # do dokończenia
+
     def inic_players_NpPD(self):
         for i in range(self.players):
             self.id_N_players[i] = i
             with open(self.strategies, 'r') as file:
-                lines = file.readlines()
-                self.N_players_strategies[i] = ''.join(lines[i][:-1].split(' '))
+                Nstrats = open(self.Nstrategies, 'w')
+                Nstrats.write(file.readlines()[i])
+                Nstrats.close()
             self.c_of_opponents[i] += 1
-            # do dokończenia
-            sys.exit(1)
+            self.set_N_players_preh()
+            exit()
 
     def functions_2PD(self):
         self.ZERO_2PD_structures()
