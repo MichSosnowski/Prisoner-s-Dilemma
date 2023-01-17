@@ -400,6 +400,7 @@ class Prisoners(QRunnable):
         self.SUM_with_opponents = [0 for i in range(self.pop_size)]
         self.c_of_opponents = [0 for i in range(self.pop_size)]
         self.history_id = list()
+        self.tournaments = list()
         self.history_freq = list()
         self.fitness = [0 for i in range(self.pop_size)]
 
