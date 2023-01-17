@@ -7,10 +7,11 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout, QFileDialo
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QIntValidator, QDoubleValidator
 from PySide6.QtCore import QThreadPool, Qt
-import matplotlib, numpy
+import matplotlib, numpy, math
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from scipy.interpolate import pchip
+from operator import itemgetter
 import prisoners
 
 matplotlib.use('Qt5Agg')
@@ -150,12 +151,31 @@ class MainWindow(QMainWindow):
         self.wykres.draw()
 
     def drawScreen2(self, path, gen):
+        players = 2
+        if self.window.PD2p.isChecked() == False: players = int(self.window.NlineEdit.text())
         results = list()
-        with open(path, 'r') as file:
-            for line in file:
-                if line.startswith('#'): continue
-                results.append(float(''.join(line.split()[1:])))
-        history = [i for i in range(len(results))]
+        history = []
+        if players == 2:
+            with open(path, 'r') as file:
+                for line in file:
+                    if line.startswith('#'): continue
+                    results.append(float(''.join(line.split()[1:])))
+            history = [i for i in range(len(results))]
+        else:
+            with open(path, 'r') as file:
+                for line in file:
+                    if line.startswith('#'): continue
+                    line = line.split()
+                    results.append([int(line[0]), float(line[1])])
+            history = [i for i in range(2 ** (int(self.window.prelineEdit.text()) + int(self.window.prelineEdit.text()) * math.ceil(math.log2(players))))]
+            temp = results[:]
+            results = [0 for i in range(len(history))]
+            k = 0
+            for i in range(len(results)):
+                if i == itemgetter(k)(temp)[0]:
+                    results[i] = itemgetter(k)(temp)[1]
+                    k += 1
+                    if k >= len(temp): break
         f = pchip(history, results)
         xnew = numpy.linspace(history[0], history[-1], num = 500, endpoint=True)
         elems = f(xnew)

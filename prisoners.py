@@ -710,10 +710,23 @@ class Prisoners(QRunnable):
                         file.write('  %d %.2f\n' % (i, freqs[i]))
                 self.signals.draw2.emit(path, self.gen)
         else:
+            temp = []
+            temp1, temp2, temp3 = self.history_id[:], self.history_freq[:], self.history_freq[:]
+            temp3.sort(reverse = True)
+            temp3 = temp3[:10]
+            for i in range(len(temp3)):
+                ind = temp2.index(temp3[i])
+                temp.append([temp1[ind], temp2[ind]])
+                temp1.pop(ind)
+                temp2.pop(ind)
+            temp.sort()
             with open('.\\RESULTS\\result_1N.txt', 'a') as file:
                 file.write('  %d %.2f %.2f\n' % (self.gen, self.best_fit, self.avg_fit))
             with open('.\\RESULTS\\result_2N.txt', 'a') as file:
                 file.write('  %d ' % self.gen)
+                for i in range(len(temp)):
+                    file.write('%d %.2f ' % (temp[i][0], temp[i][1]))
+                file.write('\n')
             self.signals.draw1.emit('.\\RESULTS\\result_1N.txt')
             if self.hist_freq_show_fulfilment == True:
                 path = '.\\RESULTS\\result_2N_' + str(self.gen) + '.txt'
@@ -736,7 +749,9 @@ class Prisoners(QRunnable):
                     file.write('# delta_freq = %d\n' % self.delta_freq)
                     file.write('# 1 2\n')
                     file.write('# history freq_of_history\n')
-                #self.signals.draw2.emit(path, self.gen)
+                    for i in range(len(temp)):
+                        file.write('  %d %.2f\n' % (temp[i][0], temp[i][1]))
+                self.signals.draw2.emit(path, self.gen)
 
     def tournament_fun(self):
         winner = None
