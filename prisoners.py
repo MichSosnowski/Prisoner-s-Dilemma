@@ -570,12 +570,13 @@ class Prisoners(QRunnable):
             for i in range(self.players):
                 population_id = self.id_N_players[i]
                 self.SUM_with_opponents[population_id] += self.payoff_N_players[i]
-            self.prehistory = self.curr_action_N_players + self.prehistory[:-self.players]
-            self.N_players_preh.clear()
-            self.set_N_players_preh()
-            self.N_players_strat_id.clear()
-            self.set_N_players_strat_id()
-            self.update_gener_history_freq()
+            if k < (self.num_of_tournaments - 1):
+                self.prehistory = self.curr_action_N_players + self.prehistory[:-self.players]
+                self.N_players_preh.clear()
+                self.set_N_players_preh()
+                self.N_players_strat_id.clear()
+                self.set_N_players_strat_id()
+                self.update_gener_history_freq()
             if self.debug == True: self.writeData6(k + 1)
 
     def duel2PD(self):
