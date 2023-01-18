@@ -175,8 +175,6 @@ class MainWindow(QMainWindow):
         self.wykres2.draw()
 
     def clearScreens(self):
-        global legend
-        legend = 0
         self.plot.clear()
         self.plot.plot([])
         self.plot.xaxis.set_visible(False)
@@ -210,6 +208,7 @@ class MainWindow(QMainWindow):
         dilemma.signals.file.connect(self.showFileDialog)
         dilemma.signals.draw1.connect(self.drawScreen1)
         dilemma.signals.draw2.connect(self.drawScreen2)
+        dilemma.signals.clear.connect(self.clearScreens)
         dilemma.signals.end.connect(lambda: self.window.pushButton.setEnabled(True))
         self.threadpool.start(dilemma)
 
