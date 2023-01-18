@@ -1,18 +1,20 @@
 # NpPD
 # prob_of_init_C = 0.500000
-# num_of_tournaments = 151
-# num_of_opponents = 10
-# prehistory l = 3
-# pop_size = 100
-# num_of_generations = 200
+# num_of_tournaments = 5
+# num_of_opponents = 1
+# prehistory l = 2
+# pop_size = 3
+# num_of_generations = 1
 # tournament_size = 3
 # crossover_prob = 0.900000
 # mutation_prob = 0.003000
 # elitist_strategy = False
 # num_of_runs = 1
-# seed = 5417873035144661
+# seed = 9988505268351684
 # freq_gen_start = 30
 # delta_freq = 10
 # 10 best frequencies
 # 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
 # gen history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq 
+  0 2 0.08 5 0.17 9 0.25 12 0.08 13 0.00 17 0.08 33 0.08 36 0.08 41 0.08 44 0.08 
+  1 9 0.13 13 0.07 17 0.07 21 0.07 37 0.07 41 0.07 42 0.07 44 0.07 45 0.07 49 0.13 

@@ -6,7 +6,7 @@ import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout, QFileDialog
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QIntValidator, QDoubleValidator
-from PySide6.QtCore import QThreadPool, Qt
+from PySide6.QtCore import QThreadPool
 import matplotlib, numpy, math
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
@@ -48,15 +48,10 @@ class MainWindow(QMainWindow):
         self.setValidators()
         self.showPlots()
         self.window.show()
-        self.dialog = loader.load(file2, self)
-        self.dialog.setWindowTitle(dialogTitle)
-        self.dialog.setWindowFlag(Qt.WindowCloseButtonHint, False)
-        self.dialog.setWindowFlag(Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint, True)
 
     def setConnects(self):
         self.window.PD2p.clicked.connect(self.selectOption)
         self.window.PDNp.clicked.connect(self.selectOption)
-        self.window.checkBox_2.clicked.connect(self.showDebug)
         self.window.pushButton.clicked.connect(self.start)
 
     def setValidators(self):
@@ -118,15 +113,6 @@ class MainWindow(QMainWindow):
             self.window.N.setEnabled(True)
             self.window.NlineEdit.setEnabled(True)
             self.window.groupBox2pPD.setEnabled(False)
-
-    def showDebug(self):
-        if self.window.checkBox_2.isChecked() == True: self.dialog.show()
-        else:
-            self.dialog.hide()
-            self.dialog.textEdit.clear()
-
-    def printDebug(self, data):
-        self.dialog.textEdit.append(data)
 
     def showFileDialog(self, title):
         prisoners.filename = QFileDialog.getOpenFileName(self, title, '.\\DATA', 'Text files (*.txt)')
@@ -221,7 +207,6 @@ class MainWindow(QMainWindow):
                 data[i] = float(data[i].replace(',', '.'))
         if self.window.PD2p.isChecked() == False: players = int(self.window.NlineEdit.text())
         dilemma = prisoners.Prisoners(players, data)
-        dilemma.signals.show.connect(self.printDebug)
         dilemma.signals.file.connect(self.showFileDialog)
         dilemma.signals.draw1.connect(self.drawScreen1)
         dilemma.signals.draw2.connect(self.drawScreen2)

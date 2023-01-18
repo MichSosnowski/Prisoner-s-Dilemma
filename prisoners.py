@@ -10,7 +10,6 @@ maxrange = 9999999999999999                     # max range of random seed
 filename = ''                                   # name of file to open
 
 class PrisonersSignals(QObject):
-    show = Signal(str)
     file = Signal(str)
     draw1 = Signal(str)
     draw2 = Signal(str, int)
@@ -49,6 +48,8 @@ class Prisoners(QRunnable):
         if len(directory) == 0: os.mkdir('.\\RESULTS')
         files = glob.glob('.\\RESULTS\\*')
         for file in files: os.remove(file)
+        if self.debug == True:
+            with open('debug.txt', 'w') as file: pass
         if self.num_of_runs == 1 and self.players == 2:
             self.createResult1()
             self.createResult2()
@@ -261,125 +262,119 @@ class Prisoners(QRunnable):
 
     def writeData(self):
         if self.debug == True and self.players == 2 and self.pop_size < 4:
-            text = 'Strategies:\n'
-            with open(self.strategies, 'r') as file:
-                for line in file: text += line
-            text += '\n\nPrehistory:\n'
-            text += ' '.join([str(self.prehistory[i]) for i in range(len(self.prehistory))])
-            self.signals.show.emit(text)
+            with open('debug.txt', 'a') as file:
+                file.write('Strategies:\n')
+                with open(self.strategies, 'r') as file2:
+                    for line in file2: file.write(line)
+                file.write('\n\nPrehistory:\n')
+                file.write(' '.join([str(self.prehistory[i]) for i in range(len(self.prehistory))]))
+                file.write('\n')
         if self.debug == True and self.players != 2 and self.pop_size < 5:
-            text = 'Strategies_N:\n'
-            with open(self.strategies, 'r') as file:
-                for line in file: text += line
-            text += '\n\nPrehistory_N:'
-            for i in range(len(self.prehistory)):
-                if i % self.players == 0: text += '\n'
-                text += str(self.prehistory[i]) + ' '
-            text += '\n'
-            self.signals.show.emit(text)
+            with open('debug.txt', 'a') as file:
+                file.write('Strategies_N:\n')
+                with open(self.strategies, 'r') as file2:
+                    for line in file2: file.write(line)
+                file.write('\n\nPrehistory_N:')
+                for i in range(len(self.prehistory)):
+                    if i % self.players == 0: file.write('\n')
+                    file.write(str(self.prehistory[i]) + ' ')
+                file.write('\n\n')
 
     def writeData2(self):
-        text = '\nP1_strat:\n'
-        text += ' '.join([str(self.P1_strat[i]) for i in range(len(self.P1_strat))])
-        text += '\n\nP2_strat:\n'
-        text += ' '.join([str(self.P2_strat[i]) for i in range(len(self.P2_strat))])
-        text += '\n\nstrat_id_1 = ' + str(self.strat_id_1)
-        text += '\nstrat_id_2 = ' + str(self.strat_id_2)
-        self.signals.show.emit(text)
-        text = '\nc_of_opponents:\n'
-        text += ' '.join([str(self.c_of_opponents[i]) for i in range(len(self.c_of_opponents))])
-        text += '\n\ngener_history_freq:\n'
-        text += ' '.join([str(self.gener_history_freq[i]) for i in range(len(self.gener_history_freq))])
-        self.signals.show.emit(text)
+        with open('debug.txt', 'a') as file:
+            file.write('\nP1_strat:\n')
+            file.write(' '.join([str(self.P1_strat[i]) for i in range(len(self.P1_strat))]))
+            file.write('\n\nP2_strat:\n')
+            file.write(' '.join([str(self.P2_strat[i]) for i in range(len(self.P2_strat))]))
+            file.write('\n\nstrat_id_1 = ' + str(self.strat_id_1))
+            file.write('\nstrat_id_2 = ' + str(self.strat_id_2))
+            file.write('\n\nc_of_opponents:\n')
+            file.write(' '.join([str(self.c_of_opponents[i]) for i in range(len(self.c_of_opponents))]))
+            file.write('\n\ngener_history_freq:\n')
+            file.write(' '.join([str(self.gener_history_freq[i]) for i in range(len(self.gener_history_freq))]))
+            file.write('\n')
 
     def writeData3(self, game):
-        text = '\nTOURNAMENT - 2 players\n\n'
-        text += 'game = %d\n' % game
-        text += 'curr_action_P1 = %d\n' % self.curr_action_P1
-        text += 'curr_action_P2 = %d\n' % self.curr_action_P2
-        text += 'payoff_P1 = %d\n' % self.payoff_P1
-        text += 'payoff_P2 = %d' % self.payoff_P2
-        self.signals.show.emit(text)
-        text = 'SUM_with_opponents:\n'
-        text += ' '.join([str(self.SUM_with_opponents[i]) for i in range(len(self.SUM_with_opponents))])
-        text += '\nPrehistory:\n'
-        text += ' '.join([str(self.prehistory[i]) for i in range(len(self.prehistory))])
-        text += '\nP1_preh:\n'
-        text += ' '.join([str(self.P1_preh[i]) for i in range(len(self.P1_preh))])
-        text += '\nP2_preh:\n'
-        text += ' '.join([str(self.P2_preh[i]) for i in range(len(self.P2_preh))])
-        self.signals.show.emit(text)
-        text = 'strat_id_1 = ' + str(self.strat_id_1)
-        text += '\nstrat_id_2 = ' + str(self.strat_id_2)
-        text += '\ngener_history_freq:\n'
-        text += ' '.join([str(self.gener_history_freq[i]) for i in range(len(self.gener_history_freq))]) + '\n'
-        self.signals.show.emit(text)
+        with open('debug.txt', 'a') as file:
+            file.write('\nTOURNAMENT - 2 players\n\n')
+            file.write('game = %d\n' % game)
+            file.write('curr_action_P1 = %d\n' % self.curr_action_P1)
+            file.write('curr_action_P2 = %d\n' % self.curr_action_P2)
+            file.write('payoff_P1 = %d\n' % self.payoff_P1)
+            file.write('payoff_P2 = %d' % self.payoff_P2)
+            file.write('\nSUM_with_opponents:\n')
+            file.write(' '.join([str(self.SUM_with_opponents[i]) for i in range(len(self.SUM_with_opponents))]))
+            file.write('\nPrehistory:\n')
+            file.write(' '.join([str(self.prehistory[i]) for i in range(len(self.prehistory))]))
+            file.write('\nP1_preh:\n')
+            file.write(' '.join([str(self.P1_preh[i]) for i in range(len(self.P1_preh))]))
+            file.write('\nP2_preh:\n')
+            file.write(' '.join([str(self.P2_preh[i]) for i in range(len(self.P2_preh))]))
+            file.write('strat_id_1 = ' + str(self.strat_id_1))
+            file.write('\nstrat_id_2 = ' + str(self.strat_id_2))
+            file.write('\ngener_history_freq:\n')
+            file.write(' '.join([str(self.gener_history_freq[i]) for i in range(len(self.gener_history_freq))]) + '\n')
 
     def writeData4(self):
-        text = '\n\nAfter GA operators\n\n'
-        text += 'Temp_strategies:\n'
-        with open(self.tempstrategies, 'r') as file:
-            for line in file: text += line
-        self.signals.show.emit(text)
-        text = 'Parent_strategies:\n'
-        for i in range(len(self.parents_strategies)): text += str(self.parents_strategies[i]) + ' '
-        text += '\n\nChild_strategies:\n'
-        with open(self.childstrategies, 'r') as file:
-            for line in file: text += line
-        self.signals.show.emit(text)
-        text = '\nStrategies:\n'
-        with open(self.strategies, 'r') as file:
-            for line in file: text += line
-        self.signals.show.emit(text)
+        with open('debug.txt', 'a') as file:
+            file.write('\n\nAfter GA operators\n\n')
+            file.write('Temp_strategies:\n')
+            with open(self.tempstrategies, 'r') as file2:
+                for line in file2: file.write(line)
+            file.write('\nParent_strategies:\n')
+            for i in range(len(self.parents_strategies)): file.write(str(self.parents_strategies[i]) + ' ')
+            file.write('\n\nChild_strategies:\n')
+            with open(self.childstrategies, 'r') as file2:
+                for line in file2: file.write(line)
+            file.write('\nStrategies:\n')
+            with open(self.strategies, 'r') as file2:
+                for line in file2: file.write(line)
 
     def writeData5(self):
-        text = 'id_N_players:\n'
-        for i in range(len(self.id_N_players)): text += str(self.id_N_players[i]) + ' '
-        text += '\n\nc_of_opponents:\n'
-        for i in range(len(self.c_of_opponents)): text += str(self.c_of_opponents[i]) + ' '
-        self.signals.show.emit(text)
-        text = '\nN_players_strategies:\n'
-        with open(self.strategies, 'r') as file:
-            for line in file: text += line
-        self.signals.show.emit(text)
-        text = '\nN_players_strat_id:\n'
-        for i in range(len(self.N_players_strat_id)): text += str(self.N_players_strat_id[i]) + ' '
-        self.signals.show.emit(text)
+        with open('debug.txt', 'a') as file:
+            file.write('id_N_players:\n')
+            for i in range(len(self.id_N_players)): file.write(str(self.id_N_players[i]) + ' ')
+            file.write('\n\nc_of_opponents:\n')
+            for i in range(len(self.c_of_opponents)): file.write(str(self.c_of_opponents[i]) + ' ')
+            file.write('\n\nN_players_strategies:\n')
+            with open(self.strategies, 'r') as file2:
+                for line in file2: file.write(line)
+            file.write('\n\nN_players_strat_id:\n')
+            for i in range(len(self.N_players_strat_id)): file.write(str(self.N_players_strat_id[i]) + ' ')
 
     def writeData6(self, k):
-        text = '\nTOURNAMENT_N_PLAYERS\n'
-        text += 'k = %d\n' % k
-        text += 'curr_action_N_players:\n'
-        for i in range(self.players): text += str(self.curr_action_N_players[i]) + ' '
-        text += '\nnum_of_C_neighb_N_players:\n'
-        for i in range(self.players): text += str(self.num_of_c_neighb_N_players[i]) + ' '
-        self.signals.show.emit(text)
-        text = 'payoff_N_players:\n'
-        for i in range(self.players): text += str(self.payoff_N_players[i]) + ' '
-        text += '\nSUM_with_opponents:\n'
-        for i in range(self.players): text += str(self.SUM_with_opponents[i]) + ' '
-        text += '\nPrehistory_N:\n'
-        for i in range(len(self.prehistory)):
-            if i % self.players == 0 and i != 0: text += '\n'
-            text += str(self.prehistory[i]) + ' '
-        self.signals.show.emit(text)
-        text = 'N_players_preh:\n'
-        w = 0
-        for i in range(len(self.N_players_preh)):
-            if type(self.N_players_preh[i]) == str:
-                text += self.N_players_preh[i]
-                w += 1
-                if w == self.prehistory_l:
-                    text += '\n'
-                    w = 0
-            else:
-                if self.N_players_preh[i] == 0: text += ' 0 '
-                else: text += ' 1 '
-        text = text[:-1]
-        self.signals.show.emit(text)
-        text = 'N_players_strat_id:\n'
-        for i in range(self.players): text += str(self.N_players_strat_id[i]) + ' '
-        self.signals.show.emit(text)
+        with open('debug.txt', 'a') as file:
+            file.write('\n\nTOURNAMENT_N_PLAYERS\n\n')
+            file.write('k = %d\n' % k)
+            file.write('curr_action_N_players:\n')
+            for i in range(self.players): file.write(str(self.curr_action_N_players[i]) + ' ')
+            file.write('\nnum_of_C_neighb_N_players:\n')
+            for i in range(self.players): file.write(str(self.num_of_c_neighb_N_players[i]) + ' ')
+            file.write('\npayoff_N_players:\n')
+            for i in range(self.players): file.write(str(self.payoff_N_players[i]) + ' ')
+            file.write('\nSUM_with_opponents:\n')
+            for i in range(self.players): file.write(str(self.SUM_with_opponents[i]) + ' ')
+            file.write('\nPrehistory_N:\n')
+            for i in range(len(self.prehistory)):
+                if i % self.players == 0 and i != 0: file.write('\n')
+                file.write(str(self.prehistory[i]) + ' ')
+            file.write('\nN_players_preh:\n')
+            w = 0
+            text = ''
+            for i in range(len(self.N_players_preh)):
+                if type(self.N_players_preh[i]) == str:
+                    text += self.N_players_preh[i]
+                    w += 1
+                    if w == self.prehistory_l:
+                        text += '\n'
+                        w = 0
+                else:
+                    if self.N_players_preh[i] == 0: text += ' 0 '
+                    else: text += ' 1 '
+            text = text[:-1]
+            file.write(text)
+            file.write('\nN_players_strat_id:\n')
+            for i in range(self.players): file.write(str(self.N_players_strat_id[i]) + ' ')
 
     def ZERO_2PD_structures(self):
         self.SUM_with_opponents = [0 for i in range(self.pop_size)]
