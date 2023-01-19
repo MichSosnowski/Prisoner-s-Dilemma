@@ -6,6 +6,7 @@ from PySide6.QtCore import QObject, QRunnable, Slot, Signal
 from statistics import mean
 import tempfile, random, math, os, glob
 import numpy as np
+import re
 
 maxrange = 9999999999999999                     # max range of random seed
 filename = ''                                   # name of file to open
@@ -238,21 +239,46 @@ class Prisoners(QRunnable):
                 file.write('set title "average total payoff (ATP)"\n')
                 file.write("plot 'result_1.txt' using 1:2 with lines lt 4 lw 3 title \"best fit\",\\\n")
                 file.write("'result_1.txt' using 1:3 with lines lt 3 lw 3 title \"avg fit\"")
-        if '.\\RESULTS\\result_2.txt' in files:
-            with open('.\\RESULTS\\result_2.plt', 'w') as file:
-                pass
+        a = re.compile('.*_2_.*txt')
+        files2 = list(filter(a.match, files))
+        if len(files2) != 0:
+            for i in files2:
+                path = i[:-3] + 'plt'
+                name = i[10:]
+                with open(path, 'w') as file:
+                    file.write('set xlabel \"history\"\n')
+                    file.write('set ylabel \"freq of game history\"\n')
+                    file.write('set title "frequency of applied strategy"\n')
+                    file.write("plot '%s' using 1:2 with lines lt 4 lw 3 title \"best fit\"" % name)
         if '.\\RESULTS\\result_1N.txt' in files:
             with open('.\\RESULTS\\result_1N.plt', 'w') as file:
-                pass
-        if '.\\RESULTS\\result_2N.txt' in files:
-            with open('.\\RESULTS\\result_2N.plt', 'w') as file:
-                pass
+                file.write('set xlabel \"gen\"\n')
+                file.write('set title "average total payoff (ATP)"\n')
+                file.write("plot 'result_1N.txt' using 1:2 with lines lt 4 lw 3 title \"best fit\",\\\n")
+                file.write("'result_1N.txt' using 1:3 with lines lt 3 lw 3 title \"avg fit\"")
+        a = re.compile('.*_2N_.*txt')
+        files2 = list(filter(a.match, files))
+        if len(files2) != 0:
+            for i in files2:
+                path = i[:-3] + 'plt'
+                name = i[10:]
+                with open(path, 'w') as file:
+                    file.write('set xlabel \"history\"\n')
+                    file.write('set ylabel \"freq of game history\"\n')
+                    file.write('set title "frequency of applied strategy"\n')
+                    file.write("plot '%s' using 1:2 with lines lt 4 lw 3 title \"best fit\"" % name)
         if '.\\RESULTS_MULTIRUN\\m_result_1.txt' in files:
             with open('.\\RESULTS_MULTIRUN\\m_result_1.plt', 'w') as file:
-                pass
+                file.write('set xlabel \"gen\"\n')
+                file.write('set title "average total payoff (ATP)"\n')
+                file.write("plot 'm_result_1.txt' using 1:2 with lines lt 4 lw 3 title \"best fit\",\\\n")
+                file.write("'m_result_1.txt' using 1:3 with lines lt 3 lw 3 title \"avg fit\"")
         if '.\\RESULTS_MULTIRUN\\std_result_1.txt' in files:
             with open('.\\RESULTS_MULTIRUN\\std_result_1.plt', 'w') as file:
-                pass
+                file.write('set xlabel \"gen\"\n')
+                file.write('set title "std deviation for avg best"\n')
+                file.write("plot 'std_result_1.txt' using 1:2 with lines lt 4 lw 3 title \"avg best\",\\\n")
+                file.write("'std_result_1.txt' using 1:2:3 with yerrorbars title \"std best\"")
 
     def clearFileName(self):
         global filename
@@ -981,9 +1007,10 @@ class Prisoners(QRunnable):
                 self.duelNPD()
                 self.fitnessStatistics()
                 self.GAoperators()
+            if self.num_of_runs > 1:
+                self.signals.clear.emit()
+                self.rng = random.Random(random.randrange(maxrange))
         if self.num_of_runs > 1:
-            self.signals.clear.emit()
-            self.rng = random.Random(random.randrange(maxrange))
             self.gen = 0
             self.bests = [[self.bests[i][j] for i in range(len(self.bests))] for j in range(len(self.bests[0]))]
             while self.gen <= self.num_of_generations:

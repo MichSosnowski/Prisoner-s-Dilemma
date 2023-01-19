@@ -167,6 +167,7 @@ class MainWindow(QMainWindow):
         elems = f(xnew)
         for i in range(len(elems)):
             if elems[i] < 0: elems[i] = 0
+        if int(self.window.runslineEdit.text()) > 1 and gen == 0: self.plot2.clear()
         self.plot2.plot(xnew, elems, label = ('gen %d' % gen))
         self.plot2.xaxis.set_visible(True)
         self.plot2.yaxis.set_visible(True)
