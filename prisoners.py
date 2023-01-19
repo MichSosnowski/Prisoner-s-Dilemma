@@ -5,6 +5,7 @@
 from PySide6.QtCore import QObject, QRunnable, Slot, Signal
 from statistics import mean
 import tempfile, random, math, os, glob
+import numpy as np
 
 maxrange = 9999999999999999                     # max range of random seed
 filename = ''                                   # name of file to open
@@ -46,9 +47,9 @@ class Prisoners(QRunnable):
         self.childstrategies = self.directory.name + '\\childstrat.txt'
         self.Nstrategies = self.directory.name + '\\Nstrat.txt'
         directory = glob.glob('.\\RESULTS')
-        directory2 = glob.glob('.\\RESULTS_N')
+        directory2 = glob.glob('.\\RESULTS_MULTIRUN')
         if len(directory) == 0: os.mkdir('.\\RESULTS')
-        if len(directory2) == 0: os.mkdir('.\\RESULTS_N')
+        if len(directory2) == 0: os.mkdir('.\\RESULTS_MULTIRUN')
         files = glob.glob('.\\RESULTS\\*')
         for file in files: os.remove(file)
         if self.debug == True:
@@ -65,6 +66,8 @@ class Prisoners(QRunnable):
             self.createResult2()
             self.createResult3()
             self.createMResult1()
+            self.createMResult2()
+            self.bests = [[0 for i in range(self.num_of_generations + 1)] for j in range(self.num_of_runs)]
 
     def createResult1(self):
         with open('.\\RESULTS\\result_1.txt', 'w') as file:
@@ -181,7 +184,7 @@ class Prisoners(QRunnable):
             file.write('# gen ' + 20 * 'history_id freq ' + '\n')
 
     def createMResult1(self):
-        with open('.\\RESULTS_N\\m_result_1.txt', 'w') as file:
+        with open('.\\RESULTS_MULTIRUN\\m_result_1.txt', 'w') as file:
             file.write('# 2pPD\n')
             file.write('# C C %d %d\n' % (self.payments[0], self.payments[1]))
             file.write('# C D %d %d\n' % (self.payments[2], self.payments[3]))
@@ -202,6 +205,30 @@ class Prisoners(QRunnable):
             file.write('# seed = %d\n' % self.seed)
             file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
             file.write('# delta_freq = %d\n' % self.delta_freq)
+
+    def createMResult2(self):
+        with open('.\\RESULTS_MULTIRUN\\std_result_1.txt', 'w') as file:
+            file.write('# 2pPD\n')
+            file.write('# C C %d %d\n' % (self.payments[0], self.payments[1]))
+            file.write('# C D %d %d\n' % (self.payments[2], self.payments[3]))
+            file.write('# D C %d %d\n' % (self.payments[4], self.payments[5]))
+            file.write('# D D %d %d\n' % (self.payments[6], self.payments[7]))
+            file.write('# prob_of_init_C = %f\n' % self.prob_of_init_C)
+            file.write('# num_of_tournaments = %d\n' % self.num_of_tournaments)
+            file.write('# num_of_opponents = %d\n' % self.num_of_opponents)
+            file.write('# prehistory l = %d\n' % self.prehistory_l)
+            file.write('# pop_size = %d\n' % self.pop_size)
+            file.write('# num_of_generations = %d\n' % self.num_of_generations)
+            file.write('# tournament_size = %d\n' % self.tournament_size)
+            file.write('# crossover_prob = %f\n' % self.crossover_prob)
+            file.write('# mutation_prob = %f\n' % self.mutation_prob)
+            if self.elitist == True: file.write('# elitist_strategy = True\n')
+            else: file.write('# elitist_strategy = False\n')
+            file.write('# num_of_runs = %d\n' % self.num_of_runs)
+            file.write('# seed = %d\n' % self.seed)
+            file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
+            file.write('# delta_freq = %d\n' % self.delta_freq)
+            file.write('# gen avg_best std_best\n')
 
     def clearFileName(self):
         global filename
@@ -737,12 +764,13 @@ class Prisoners(QRunnable):
                         file.write('  %d %.2f\n' % (i, freqs[i]))
                 self.signals.draw2.emit(path, self.gen)
             if self.num_of_runs > 1:
-                with open('.\\RESULTS_N\\m_result_1.txt', 'a') as file:
+                with open('.\\RESULTS_MULTIRUN\\m_result_1.txt', 'a') as file:
                     if self.gen == 0:
                         file.write('# Exper %d\n' % self.exper)
                         file.write('# 1 2 3\n')
                         file.write('# gen best_fit avg_fit\n')
                     file.write('  %d %.2f %.2f\n' % (self.gen, self.best_fit, self.avg_fit))
+                self.bests[self.exper - 1][self.gen] += self.best_fit
         else:
             temp = []
             temp1, temp2, temp3 = self.history_id[:], self.history_freq[:], self.history_freq[:]
@@ -912,7 +940,7 @@ class Prisoners(QRunnable):
                 self.createResult3()
                 self.start = self.freq_gen_start
                 if self.exper != 1:
-                    with open('.\\RESULTS_N\\m_result_1.txt', 'a') as file: file.write('\n')
+                    with open('.\\RESULTS_MULTIRUN\\m_result_1.txt', 'a') as file: file.write('\n')
             self.gen = 0
             self.readData()
             self.writeData()
@@ -931,4 +959,11 @@ class Prisoners(QRunnable):
                 self.GAoperators()
             self.signals.clear.emit()
             self.rng = random.Random(random.randrange(maxrange))
+        if self.num_of_runs > 1:
+            self.gen = 0
+            self.bests = [[self.bests[i][j] for i in range(len(self.bests))] for j in range(len(self.bests[0]))]
+            while self.gen <= self.num_of_generations:
+                with open('.\\RESULTS_MULTIRUN\\std_result_1.txt', 'a') as file:
+                    file.write('  %d %.2f %.2f\n' % (self.gen, mean(self.bests[self.gen]), np.std(self.bests[self.gen])))
+                self.gen += 1
         self.signals.end.emit()
