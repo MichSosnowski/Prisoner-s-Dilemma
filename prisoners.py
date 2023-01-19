@@ -994,6 +994,7 @@ class Prisoners(QRunnable):
             elif self.num_of_runs > 1 and self.players != 2:
                 self.createResult1N()
                 self.createResult2N()
+                self.start = self.freq_gen_start
             self.gen = 0
             self.readData()
             self.writeData()
