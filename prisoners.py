@@ -59,9 +59,6 @@ class Prisoners(QRunnable):
             self.createResult1()
             self.createResult2()
             self.createResult3()
-        elif self.num_of_runs == 1 and self.players != 2:
-            self.createResult1N()
-            self.createResult2N()
         elif self.num_of_runs > 1 and self.players == 2:
             self.createResult1()
             self.createResult2()
@@ -69,6 +66,9 @@ class Prisoners(QRunnable):
             self.createMResult1()
             self.createMResult2()
             self.bests = [[0 for i in range(self.num_of_generations + 1)] for j in range(self.num_of_runs)]
+        elif self.players != 2:
+            self.createResult1N()
+            self.createResult2N()
 
     def createResult1(self):
         with open('.\\RESULTS\\result_1.txt', 'w') as file:
@@ -983,7 +983,7 @@ class Prisoners(QRunnable):
     @Slot()
     def run(self):
         for i in range(self.num_of_runs):
-            if self.num_of_runs > 1:
+            if self.num_of_runs > 1 and self.players == 2:
                 self.exper = i + 1
                 self.createResult1()
                 self.createResult2()
@@ -991,6 +991,9 @@ class Prisoners(QRunnable):
                 self.start = self.freq_gen_start
                 if self.exper != 1:
                     with open('.\\RESULTS_MULTIRUN\\m_result_1.txt', 'a') as file: file.write('\n')
+            elif self.num_of_runs > 1 and self.players != 2:
+                self.createResult1N()
+                self.createResult2N()
             self.gen = 0
             self.readData()
             self.writeData()
@@ -1010,7 +1013,7 @@ class Prisoners(QRunnable):
             if self.num_of_runs > 1:
                 self.signals.clear.emit()
                 self.rng = random.Random(random.randrange(maxrange))
-        if self.num_of_runs > 1:
+        if self.num_of_runs > 1 and self.players == 2:
             self.gen = 0
             self.bests = [[self.bests[i][j] for i in range(len(self.bests))] for j in range(len(self.bests[0]))]
             while self.gen <= self.num_of_generations:
