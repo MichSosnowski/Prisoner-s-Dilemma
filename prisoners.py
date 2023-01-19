@@ -230,6 +230,30 @@ class Prisoners(QRunnable):
             file.write('# delta_freq = %d\n' % self.delta_freq)
             file.write('# gen avg_best std_best\n')
 
+    def createGnuplotScripts(self):
+        files = glob.glob('.\\RESULTS\\*') + glob.glob('.\\RESULTS_MULTIRUN\\*')
+        if '.\\RESULTS\\result_1.txt' in files:
+            with open('.\\RESULTS\\result_1.plt', 'w') as file:
+                file.write('set xlabel \"gen\"\n')
+                file.write('set title "average total payoff (ATP)"\n')
+                file.write("plot 'result_1.txt' using 1:2 with lines lt 4 lw 3 title \"best fit\",\\\n")
+                file.write("'result_1.txt' using 1:3 with lines lt 3 lw 3 title \"avg fit\"")
+        if '.\\RESULTS\\result_2.txt' in files:
+            with open('.\\RESULTS\\result_2.plt', 'w') as file:
+                pass
+        if '.\\RESULTS\\result_1N.txt' in files:
+            with open('.\\RESULTS\\result_1N.plt', 'w') as file:
+                pass
+        if '.\\RESULTS\\result_2N.txt' in files:
+            with open('.\\RESULTS\\result_2N.plt', 'w') as file:
+                pass
+        if '.\\RESULTS_MULTIRUN\\m_result_1.txt' in files:
+            with open('.\\RESULTS_MULTIRUN\\m_result_1.plt', 'w') as file:
+                pass
+        if '.\\RESULTS_MULTIRUN\\std_result_1.txt' in files:
+            with open('.\\RESULTS_MULTIRUN\\std_result_1.plt', 'w') as file:
+                pass
+
     def clearFileName(self):
         global filename
         filename = ''
@@ -957,13 +981,14 @@ class Prisoners(QRunnable):
                 self.duelNPD()
                 self.fitnessStatistics()
                 self.GAoperators()
+        if self.num_of_runs > 1:
             self.signals.clear.emit()
             self.rng = random.Random(random.randrange(maxrange))
-        if self.num_of_runs > 1:
             self.gen = 0
             self.bests = [[self.bests[i][j] for i in range(len(self.bests))] for j in range(len(self.bests[0]))]
             while self.gen <= self.num_of_generations:
                 with open('.\\RESULTS_MULTIRUN\\std_result_1.txt', 'a') as file:
                     file.write('  %d %.2f %.2f\n' % (self.gen, mean(self.bests[self.gen]), np.std(self.bests[self.gen])))
                 self.gen += 1
+        self.createGnuplotScripts()
         self.signals.end.emit()
