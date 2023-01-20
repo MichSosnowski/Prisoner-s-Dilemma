@@ -608,7 +608,7 @@ class Prisoners(QRunnable):
                 Nstrats = open(self.Nstrategies, 'a')
                 Nstrats.write(file.readlines()[i])
                 Nstrats.close()
-            self.c_of_opponents[i] += 1
+            self.c_of_opponents[i] += (self.players - 1)
         self.set_N_players_preh()
         self.set_N_players_strat_id()
         self.set_gener_history_freq()
@@ -725,7 +725,7 @@ class Prisoners(QRunnable):
             self.tournamentNPD()
             self.min = min(self.c_of_opponents)
             self.id = self.c_of_opponents.index(self.min)
-            if self.min == self.num_of_opponents: self.duel_fulfilment = True
+            if self.min >= self.num_of_opponents: self.duel_fulfilment = True
             else:
                 temp = self.c_of_opponents
                 temp1 = self.SUM_with_opponents
@@ -735,12 +735,12 @@ class Prisoners(QRunnable):
                 self.SUM_with_opponents = temp1
                 self.id_N_players = [-1 for i in range(self.players)]
                 self.id_N_players[0] = self.id
-                self.c_of_opponents[self.id] += 1
+                self.c_of_opponents[self.id] += (self.players - 1)
                 for i in range(1, self.players):
                     id = self.rng.randint(0, self.pop_size - 1)
                     while (id in self.id_N_players) == True: id = self.rng.randint(0, self.pop_size - 1)
                     self.id_N_players[i] = id
-                    self.c_of_opponents[id] += 1
+                    self.c_of_opponents[id] += (self.players - 1)
                 for i in range(self.players):
                     with open(self.Nstrategies, 'a') as file:
                         strats = open(self.strategies, 'r')
