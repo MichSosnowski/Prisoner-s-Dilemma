@@ -67,6 +67,8 @@ class Prisoners(QRunnable):
             self.createMResult2()
             self.bests = [[0 for i in range(self.num_of_generations + 1)] for j in range(self.num_of_runs)]
         elif self.players != 2:
+            self.choices_C = 0
+            self.choices_all = 0
             self.createResult1N()
             self.createResult2N()
 
@@ -160,7 +162,7 @@ class Prisoners(QRunnable):
             file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
             file.write('# delta_freq = %d\n' % self.delta_freq)
             file.write('#  1 2 3\n')
-            file.write('# gen best_fit avg_fit\n')
+            file.write('# gen best_fit avg_fit avg_N_of_C %_avg_C\n')
 
     def createResult2N(self):
         with open('.\\RESULTS\\result_2N.txt', 'w') as file:
@@ -670,6 +672,8 @@ class Prisoners(QRunnable):
             for i in range(self.players):
                 if self.curr_action_N_players[i] == 1: self.payoff_N_players[i] = 2 * self.num_of_c_neighb_N_players[i]
                 else: self.payoff_N_players[i] = 2 * self.num_of_c_neighb_N_players[i] + 1
+            self.choices_C += sum(self.curr_action_N_players)
+            self.choices_all += len(self.curr_action_N_players)
             for i in range(self.players):
                 population_id = self.id_N_players[i]
                 self.SUM_with_opponents[population_id] += self.payoff_N_players[i]
@@ -833,7 +837,8 @@ class Prisoners(QRunnable):
                 temp2.pop(ind)
             temp.sort()
             with open('.\\RESULTS\\result_1N.txt', 'a') as file:
-                file.write('  %d %.2f %.2f\n' % (self.gen, self.best_fit, self.avg_fit))
+                choices = self.choices_C / self.choices_all
+                file.write('  %d %.2f %.2f %.2f %.2f\n' % (self.gen, self.best_fit, self.avg_fit, choices, (choices / self.players)))
             with open('.\\RESULTS\\result_2N.txt', 'a') as file:
                 file.write('  %d ' % self.gen)
                 for i in range(len(temp)):
