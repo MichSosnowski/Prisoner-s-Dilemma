@@ -30,11 +30,15 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName(u"gridLayout")
         self.plot = QWidget(self.centralwidget)
         self.plot.setObjectName(u"plot")
+        self.plot.setAutoFillBackground(False)
+        self.plot.setStyleSheet(u"background-color: rgb(240, 240, 240);")
 
         self.gridLayout.addWidget(self.plot, 0, 1, 1, 1)
 
         self.plot2 = QWidget(self.centralwidget)
         self.plot2.setObjectName(u"plot2")
+        self.plot2.setAutoFillBackground(False)
+        self.plot2.setStyleSheet(u"background-color: rgb(240, 240, 240);")
 
         self.gridLayout.addWidget(self.plot2, 1, 1, 1, 1)
 

@@ -606,9 +606,14 @@ class Prisoners(QObject):
     def inic_players_NpPD(self):
         for i in range(self.players):
             self.id_N_players[i] = i
+            number = 0
             with open(self.strategies, 'r') as file:
                 Nstrats = open(self.Nstrategies, 'a')
-                Nstrats.write(file.readlines()[i])
+                for line in file:
+                    if number == i:
+                        Nstrats.write(line)
+                        break
+                    number += 1
                 Nstrats.close()
             self.c_of_opponents[i] += (self.players - 1)
         self.set_N_players_preh()
@@ -662,21 +667,23 @@ class Prisoners(QObject):
         for k in range(self.num_of_tournaments):
             for i in range(self.players):
                 strat_id = self.N_players_strat_id[i]
+                number = 0
                 with open(self.Nstrategies, 'r') as file:
-                    line = file.readlines()[i]
-                    line = ''.join(line.split())
-                    self.curr_action_N_players[i] = int(line[strat_id])
+                    for line in file:
+                        if number == i:
+                            line = ''.join(line.split())
+                            self.curr_action_N_players[i] = int(line[strat_id])
+                            break
+                        number += 1
             coops = sum(self.curr_action_N_players)
             for i in range(self.players):
                 self.num_of_c_neighb_N_players[i] = coops - self.curr_action_N_players[i]
-            for i in range(self.players):
                 if self.curr_action_N_players[i] == 1: self.payoff_N_players[i] = 2 * self.num_of_c_neighb_N_players[i]
                 else: self.payoff_N_players[i] = 2 * self.num_of_c_neighb_N_players[i] + 1
-            self.choices_C += sum(self.curr_action_N_players)
-            self.choices_all += len(self.curr_action_N_players)
-            for i in range(self.players):
                 population_id = self.id_N_players[i]
                 self.SUM_with_opponents[population_id] += self.payoff_N_players[i]
+            self.choices_C += sum(self.curr_action_N_players)
+            self.choices_all += len(self.curr_action_N_players)
             if k < (self.num_of_tournaments - 1):
                 self.prehistory = self.curr_action_N_players + self.prehistory[:-self.players]
                 self.N_players_preh.clear()
@@ -746,9 +753,14 @@ class Prisoners(QObject):
                     self.id_N_players[i] = id
                     self.c_of_opponents[id] += (self.players - 1)
                 for i in range(self.players):
+                    number = 0
                     with open(self.Nstrategies, 'a') as file:
                         strats = open(self.strategies, 'r')
-                        file.write(strats.readlines()[self.id_N_players[i]])
+                        for line in strats:
+                            if number == self.id_N_players[i]:
+                                file.write(line)
+                                break
+                            number += 1
                         strats.close()
                 self.prehistory = [self.rng.randint(0, 1) for i in range(self.prehistory_l * self.players)]
                 self.set_N_players_preh()
@@ -784,9 +796,14 @@ class Prisoners(QObject):
             with open('.\\RESULTS\\result_3.txt', 'a') as file:
                 file.write('  %d ' % self.gen)
                 with open(self.strategies, 'r') as file2:
-                    line = ' '.join(file2.readlines()[self.fitness.index(self.best_fit)].split(' '))
-                    file.write(line)
-                    if line.endswith('\n') == False: file.write('\n')
+                    number = 0
+                    for line in file2:
+                        if number == self.fitness.index(self.best_fit):
+                            line = ' '.join(line.split(' '))
+                            file.write(line)
+                            if line.endswith('\n') == False: file.write('\n')
+                            break
+                        number += 1
             self.signals.draw1.emit('.\\RESULTS\\result_1.txt')
             if self.hist_freq_show_fulfilment == True:
                 path = '.\\RESULTS\\result_2_' + str(self.gen) + '.txt'
@@ -916,18 +933,27 @@ class Prisoners(QObject):
             self.gen = i + 1
             winners = []
             best_strat = ''
+            number = 0
             with open(self.strategies, 'r') as file:
                 best = self.fitness.index(max(self.fitness))
-                best_strat = file.readlines()[best]
+                for line in file:
+                    if number == best:
+                        best_strat = line
+                        break
+                    number += 1
             # tournament selection
             for j in range(self.pop_size):
                 winner = self.tournament_fun()
                 if (winner in winners) == False: winners.append(winner)
                 with open(self.tempstrategies, 'a') as file:
+                    number = 0
                     strat = open(self.strategies, 'r')
-                    line = strat.readlines()[winner]
-                    if line.endswith('\n') == False: file.write(line + '\n')
-                    else: file.write(line)
+                    for line in strat:
+                        if number == winner:
+                            if line.endswith('\n') == False: file.write(line + '\n')
+                            else: file.write(line)
+                            break
+                        number += 1
                     strat.close()
             # crossover
             self.parents_strategies = [0 for i in range(self.pop_size)]

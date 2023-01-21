@@ -4,15 +4,15 @@
 # num_of_opponents = 10
 # prehistory l = 3
 # pop_size = 100
-# num_of_generations = 200
+# num_of_generations = 10
 # tournament_size = 3
 # crossover_prob = 0.900000
 # mutation_prob = 0.003000
 # elitist_strategy = False
-# num_of_runs = 3
-# seed = 9791278959003996
-# freq_gen_start = 30
-# delta_freq = 10
+# num_of_runs = 1
+# seed = 3504547056510244
+# freq_gen_start = 5
+# delta_freq = 5
 #  1 2 3
 # gen best_fit avg_fit avg_N_of_C %_avg_C
-  0 1.50 1.17 0.50 0.13
+  0 1.12 1.07 0.50 0.06
