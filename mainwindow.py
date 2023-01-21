@@ -6,7 +6,7 @@ import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout, QFileDialog
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QIntValidator, QDoubleValidator
-from PySide6.QtCore import QThreadPool
+from PySide6.QtCore import QThread
 import matplotlib, numpy, math
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
@@ -36,7 +36,6 @@ fontSize = 9                                        # font size for titles of pl
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.threadpool = QThreadPool()
         self.load_ui()
 
     def load_ui(self):
@@ -204,13 +203,19 @@ class MainWindow(QMainWindow):
             if type(data[i]) == type(str()) and data[i] != '':
                 data[i] = float(data[i].replace(',', '.'))
         if self.window.PD2p.isChecked() == False: players = int(self.window.NlineEdit.text())
-        dilemma = prisoners.Prisoners(players, data)
-        dilemma.signals.file.connect(self.showFileDialog)
-        dilemma.signals.draw1.connect(self.drawScreen1)
-        dilemma.signals.draw2.connect(self.drawScreen2)
-        dilemma.signals.clear.connect(self.clearScreens)
-        dilemma.signals.end.connect(lambda: self.window.pushButton.setEnabled(True))
-        self.threadpool.start(dilemma)
+        self.dilemma = prisoners.Prisoners(players, data)
+        self.dilemma.signals.file.connect(self.showFileDialog)
+        self.dilemma.signals.draw1.connect(self.drawScreen1)
+        self.dilemma.signals.draw2.connect(self.drawScreen2)
+        self.dilemma.signals.clear.connect(self.clearScreens)
+        self.dilemma.signals.end.connect(lambda: self.window.pushButton.setEnabled(True))
+        self.thread = QThread()
+        self.dilemma.moveToThread(self.thread)
+        self.thread.started.connect(self.dilemma.launch)
+        self.thread.start()
+
+    def closeEvent(self, event):
+        self.thread.terminate()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

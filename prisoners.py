@@ -2,7 +2,7 @@
 # This file consists of code which is used to solve Prisoner's Dilemma.
 # It is used by mainwindow.py
 
-from PySide6.QtCore import QObject, QRunnable, Slot, Signal
+from PySide6.QtCore import QObject, Slot, Signal
 from statistics import mean
 import tempfile, random, math, os, glob
 import numpy as np
@@ -18,9 +18,9 @@ class PrisonersSignals(QObject):
     clear = Signal()
     end = Signal()
 
-class Prisoners(QRunnable):
+class Prisoners(QObject):
     def __init__(self, players, data):
-        super().__init__(self)
+        super(Prisoners, self).__init__()
         self.players = players
         self.signals = PrisonersSignals()
         if self.players == 2: self.payments = [data[i] for i in range(8)]
@@ -986,7 +986,7 @@ class Prisoners(QRunnable):
             self.fitnessStatistics()
 
     @Slot()
-    def run(self):
+    def launch(self):
         for i in range(self.num_of_runs):
             if self.num_of_runs > 1 and self.players == 2:
                 self.exper = i + 1
