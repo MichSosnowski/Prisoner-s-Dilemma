@@ -7,6 +7,7 @@ from statistics import mean
 import tempfile, random, math, os, glob
 import numpy as np
 import re
+from timeit import default_timer
 
 maxrange = 9999999999999999                     # max range of random seed
 filename = ''                                   # name of file to open
@@ -145,7 +146,7 @@ class Prisoners(QObject):
 
     def createResult1N(self):
         with open('.\\RESULTS\\result_1N.txt', 'w') as file:
-            file.write('# NpPD\n')
+            file.write('# %dpPD\n' % self.players)
             file.write('# prob_of_init_C = %f\n' % self.prob_of_init_C)
             file.write('# num_of_tournaments = %d\n' % self.num_of_tournaments)
             file.write('# num_of_opponents = %d\n' % self.num_of_opponents)
@@ -1003,6 +1004,7 @@ class Prisoners(QObject):
 
     @Slot()
     def launch(self):
+        start = default_timer()
         for i in range(self.num_of_runs):
             if self.num_of_runs > 1 and self.players == 2:
                 self.exper = i + 1
@@ -1044,3 +1046,4 @@ class Prisoners(QObject):
                 self.gen += 1
         self.createGnuplotScripts()
         self.signals.end.emit()
+        print('All: %f' % (default_timer() - start))
