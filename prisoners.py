@@ -251,7 +251,7 @@ class Prisoners(QObject):
                     file.write('set xlabel \"history\"\n')
                     file.write('set ylabel \"freq of game history\"\n')
                     file.write('set title "frequency of applied strategy"\n')
-                    file.write("plot '%s' using 1:2 with lines lt 4 lw 3 title \"best fit\"" % name)
+                    file.write("plot '%s' using 1:2 with lines lt 4 lw 3 title \"freq\"" % name)
         if '.\\RESULTS\\result_1N.txt' in files:
             with open('.\\RESULTS\\result_1N.plt', 'w') as file:
                 file.write('set xlabel \"gen\"\n')
@@ -268,7 +268,7 @@ class Prisoners(QObject):
                     file.write('set xlabel \"history\"\n')
                     file.write('set ylabel \"freq of game history\"\n')
                     file.write('set title "frequency of applied strategy"\n')
-                    file.write("plot '%s' using 1:2 with lines lt 4 lw 3 title \"best fit\"" % name)
+                    file.write("plot '%s' using 1:2 with lines lt 4 lw 3 title \"freq\"" % name)
         if '.\\RESULTS_MULTIRUN\\m_result_1.txt' in files:
             with open('.\\RESULTS_MULTIRUN\\m_result_1.plt', 'w') as file:
                 file.write('set xlabel \"gen\"\n')
@@ -553,23 +553,10 @@ class Prisoners(QObject):
             row = self.prehistory[k:(k + self.players)]
             k += self.players
             self.N_players_preh.append(row)
-        temp = []
-        for i in range(len(self.N_players_preh[0])):
-            temp.append([self.N_players_preh[j][i] for j in range(len(self.N_players_preh))])
-        self.N_players_preh.clear()
-        for i in range(len(temp)):
-            for j in range(len(temp[i])):
-                self.N_players_preh.append(temp[i][j])
-                self.N_players_preh.append('')
-        temp.clear()
-        k = 0
-        for i in range(self.prehistory_l):
-            row = self.prehistory[k:(k + self.players)]
-            k += self.players
-            temp.append(row)
-        coops = []
-        for i in range(len(temp)):
-            coops.append(sum(temp[i]))
+        temp = [[self.N_players_preh[i][j] for i in range(len(self.N_players_preh))] for j in range(len(self.N_players_preh[0]))]
+        temp2 = self.N_players_preh[:]
+        self.N_players_preh = [x for i in range(len(temp)) for j in range(len(temp[0])) for x in (temp[i][j], '')]
+        coops = [sum(temp2[i]) for i in range(len(temp2))]
         k = 0
         for i in range(len(self.N_players_preh)):
             if type(self.N_players_preh[i]) == str: continue
@@ -663,26 +650,24 @@ class Prisoners(QObject):
             self.gener_history_freq[self.strat_id_2] += 1
             if self.debug == True: self.writeData3(i + 1)
 
+    def getStrategies(self):
+        self.chosenStrategies = []
+        with open(self.Nstrategies, 'r') as file:
+            for line in file:
+                self.chosenStrategies.append(''.join(line.split()))
+
     def tournamentNPD(self):
         for k in range(self.num_of_tournaments):
             for i in range(self.players):
                 strat_id = self.N_players_strat_id[i]
-                number = 0
-                with open(self.Nstrategies, 'r') as file:
-                    for line in file:
-                        if number == i:
-                            line = ''.join(line.split())
-                            self.curr_action_N_players[i] = int(line[strat_id])
-                            break
-                        number += 1
+                self.curr_action_N_players[i] = int(self.chosenStrategies[i][strat_id])
             coops = sum(self.curr_action_N_players)
+            self.num_of_c_neighb_N_players = [(coops - self.curr_action_N_players[i]) for i in range(self.players)]
+            self.payoff_N_players = [(2 * self.num_of_c_neighb_N_players[i]) if self.curr_action_N_players[i] == 1 else (2 * self.num_of_c_neighb_N_players[i] + 1) for i in range(self.players)]
+            population_id = [self.id_N_players[i] for i in range(self.players)]
             for i in range(self.players):
-                self.num_of_c_neighb_N_players[i] = coops - self.curr_action_N_players[i]
-                if self.curr_action_N_players[i] == 1: self.payoff_N_players[i] = 2 * self.num_of_c_neighb_N_players[i]
-                else: self.payoff_N_players[i] = 2 * self.num_of_c_neighb_N_players[i] + 1
-                population_id = self.id_N_players[i]
-                self.SUM_with_opponents[population_id] += self.payoff_N_players[i]
-            self.choices_C += sum(self.curr_action_N_players)
+                self.SUM_with_opponents[population_id[i]] += self.payoff_N_players[i]
+            self.choices_C += coops
             self.choices_all += len(self.curr_action_N_players)
             if k < (self.num_of_tournaments - 1):
                 self.prehistory = self.curr_action_N_players + self.prehistory[:-self.players]
@@ -692,6 +677,7 @@ class Prisoners(QObject):
                 self.set_N_players_strat_id()
                 self.update_gener_history_freq()
             if self.debug == True: self.writeData6(k + 1)
+
 
     def duel2PD(self):
         self.duel_fulfilment = False
@@ -733,6 +719,7 @@ class Prisoners(QObject):
     def duelNPD(self):
         self.duel_fulfilment = False
         while self.duel_fulfilment == False:
+            self.getStrategies()
             self.tournamentNPD()
             self.min = min(self.c_of_opponents)
             self.id = self.c_of_opponents.index(self.min)
@@ -972,9 +959,12 @@ class Prisoners(QObject):
                     chosen2 = self.rng.randint(0, (len(self.parents_strategies) - 1))
                     while self.parents_strategies[chosen2] != 1 or chosen2 == chosen:
                         chosen2 = self.rng.randint(0, (len(self.parents_strategies) - 1))
-                    strat1 = ''.join(file.readlines()[chosen].split())
-                    file.seek(0)
-                    strat2 = ''.join(file.readlines()[chosen2].split())
+                    number = 0
+                    for line in file:
+                        if number == chosen: strat1 = ''.join(line.split())
+                        elif number == chosen2: strat2 = ''.join(line.split())
+                        elif number > chosen and number > chosen2: break
+                        number += 1
                     (strat1, strat2) = self.crossover_fun(strat1, strat2)
                     children.write(' '.join(list(strat1)) + '\n')
                     children.write(' '.join(list(strat2)) + '\n')
