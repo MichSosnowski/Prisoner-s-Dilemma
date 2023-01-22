@@ -852,7 +852,7 @@ class Prisoners(QObject):
             if self.hist_freq_show_fulfilment == True:
                 path = '.\\RESULTS\\result_2N_' + str(self.gen) + '.txt'
                 with open(path, 'w') as file:
-                    file.write('# NpPD\n')
+                    file.write('# %dpPD\n' % self.players)
                     file.write('# prob_of_init_C = %f\n' % self.prob_of_init_C)
                     file.write('# num_of_tournaments = %d\n' % self.num_of_tournaments)
                     file.write('# num_of_opponents = %d\n' % self.num_of_opponents)
