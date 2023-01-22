@@ -776,7 +776,7 @@ class Prisoners(QObject):
         else: self.hist_freq_show_fulfilment = False
         if self.players == 2:
             with open('.\\RESULTS\\result_1.txt', 'a') as file:
-                file.write('  %d %.2f %.2f\n' % (self.gen, self.best_fit, self.avg_fit))
+                file.write('  %d %.2f %.2f\n' % (self.gen, round(self.best_fit, 2), round(self.avg_fit, 2)))
             with open('.\\RESULTS\\result_2.txt', 'a') as file:
                 file.write('  %d ' % self.gen)
                 file.write(' '.join([str(round(self.history_freq[i], 2)) for i in range(len(self.history_freq))]) + '\n')
@@ -819,7 +819,7 @@ class Prisoners(QObject):
                     file.write('# history freq_of_game_histories\n')
                     freqs = [round(self.history_freq[i], 2) for i in range(len(self.history_freq))]
                     for i in range(len(freqs)):
-                        file.write('  %d %.2f\n' % (i, freqs[i]))
+                        file.write('  %d %.2f\n' % (i, round(freqs[i], 2)))
                 self.signals.draw2.emit(path, self.gen)
             if self.num_of_runs > 1:
                 with open('.\\RESULTS_MULTIRUN\\m_result_1.txt', 'a') as file:
@@ -842,11 +842,11 @@ class Prisoners(QObject):
             temp.sort()
             with open('.\\RESULTS\\result_1N.txt', 'a') as file:
                 choices = self.choices_C / self.choices_all
-                file.write('  %d %.2f %.2f %.2f %.2f\n' % (self.gen, self.best_fit, self.avg_fit, choices, (choices / self.players)))
+                file.write('  %d %.2f %.2f %.2f %.2f\n' % (self.gen, round(self.best_fit, 2), round(self.avg_fit, 2), round(choices, 2), round((choices / self.players), 2)))
             with open('.\\RESULTS\\result_2N.txt', 'a') as file:
                 file.write('  %d ' % self.gen)
                 for i in range(len(temp)):
-                    file.write('%d %.2f ' % (temp[i][0], temp[i][1]))
+                    file.write('%d %.2f ' % (temp[i][0], round(temp[i][1], 2)))
                 file.write('\n')
             self.signals.draw1.emit('.\\RESULTS\\result_1N.txt')
             if self.hist_freq_show_fulfilment == True:
@@ -871,7 +871,7 @@ class Prisoners(QObject):
                     file.write('# 1 2\n')
                     file.write('# history freq_of_history\n')
                     for i in range(len(temp)):
-                        file.write('  %d %.2f\n' % (temp[i][0], temp[i][1]))
+                        file.write('  %d %.2f\n' % (temp[i][0], round(temp[i][1], 2)))
                 self.signals.draw2.emit(path, self.gen)
 
     def tournament_fun(self):
@@ -1040,7 +1040,7 @@ class Prisoners(QObject):
             self.bests = [[self.bests[i][j] for i in range(len(self.bests))] for j in range(len(self.bests[0]))]
             while self.gen <= self.num_of_generations:
                 with open('.\\RESULTS_MULTIRUN\\std_result_1.txt', 'a') as file:
-                    file.write('  %d %.2f %.2f\n' % (self.gen, mean(self.bests[self.gen]), np.std(self.bests[self.gen])))
+                    file.write('  %d %.2f %.2f\n' % (self.gen, round(mean(self.bests[self.gen]), 2), round(np.std(self.bests[self.gen]), 2)))
                 self.gen += 1
         self.createGnuplotScripts()
         self.signals.end.emit()
