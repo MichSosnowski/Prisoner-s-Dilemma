@@ -494,6 +494,38 @@ class Prisoners(QObject):
             file.write('\nN_players_strat_id:\n')
             for i in range(self.players): file.write(str(self.N_players_strat_id[i]) + ' ')
 
+    def writeData7(self):
+        with open('debug.txt', 'a') as file:
+            file.write('\n\nprint_24:\n\n')
+            file.write('DUEL NpPD\n\n')
+            file.write('New set of players - strategies:\n')
+            file.write('id_N_players:\n')
+            for i in range(len(self.id_N_players)): file.write(str(self.id_N_players[i]) + ' ')
+            file.write('\n\nN_players_strategies:\n')
+            with open(self.strategies, 'r') as file2:
+                for line in file2: file.write(line)
+            file.write('\nPrehistory_N:\n')
+            for i in range(len(self.prehistory)):
+                if i % self.players == 0 and i != 0: file.write('\n')
+                file.write(str(self.prehistory[i]) + ' ')
+            file.write('\nN_players_preh:\n')
+            w = 0
+            text = ''
+            for i in range(len(self.N_players_preh)):
+                if type(self.N_players_preh[i]) == str:
+                    text += self.N_players_preh[i]
+                    w += 1
+                    if w == self.prehistory_l:
+                        text += '\n'
+                        w = 0
+                else:
+                    if self.N_players_preh[i] == 0: text += ' 0 '
+                    else: text += ' 1 '
+            text = text[:-1]
+            file.write(text)
+            file.write('\nN_players_strat_id:\n')
+            for i in range(self.players): file.write(str(self.N_players_strat_id[i]) + ' ')
+
     def ZERO_2PD_structures(self):
         self.SUM_with_opponents = [0 for i in range(self.pop_size)]
         self.c_of_opponents = [0 for i in range(self.pop_size)]
@@ -762,6 +794,7 @@ class Prisoners(QObject):
                 self.set_N_players_preh()
                 self.set_N_players_strat_id()
                 self.update_gener_history_freq()
+                if self.debug == True: self.writeData7()
 
     def fitnessStatistics(self):
         for i in range(self.pop_size):
