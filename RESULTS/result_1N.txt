@@ -1,28 +1,18 @@
-# 8pPD
+# 3pPD
 # prob_of_init_C = 0.500000
-# num_of_tournaments = 151
-# num_of_opponents = 10
-# prehistory l = 3
-# pop_size = 100
-# num_of_generations = 10
+# num_of_tournaments = 5
+# num_of_opponents = 1
+# prehistory l = 2
+# pop_size = 3
+# num_of_generations = 2
 # tournament_size = 3
-# crossover_prob = 0.900000
+# crossover_prob = 1.000000
 # mutation_prob = 0.003000
 # elitist_strategy = False
 # num_of_runs = 1
-# seed = 6775170908538869
-# freq_gen_start = 5
-# delta_freq = 5
+# seed = 1575408439626499
+# freq_gen_start = 30
+# delta_freq = 10
 #  1 2 3
 # gen best_fit avg_fit avg_N_of_C %_avg_C
-  0 1.12 1.06 0.49 0.06
-  1 1.40 1.08 0.49 0.06
-  2 1.64 1.10 0.50 0.06
-  3 1.55 1.09 0.50 0.06
-  4 1.64 1.09 0.50 0.06
-  5 1.58 1.08 0.49 0.06
-  6 1.57 1.08 0.49 0.06
-  7 1.67 1.07 0.49 0.06
-  8 1.59 1.07 0.49 0.06
-  9 1.57 1.06 0.49 0.06
-  10 1.54 1.06 0.49 0.06
+  0 1.50 1.00 0.33 0.11
