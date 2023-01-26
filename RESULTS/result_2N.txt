@@ -10,10 +10,12 @@
 # mutation_prob = 0.003000
 # elitist_strategy = False
 # num_of_runs = 1
-# seed = 1575408439626499
+# seed = 4023704936450720
 # freq_gen_start = 30
 # delta_freq = 10
 # 10 best frequencies
 # 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
 # gen history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq history_id freq 
   0 5 0.13 9 0.20 12 0.07 13 0.13 17 0.07 33 0.07 34 0.07 36 0.07 41 0.07 44 0.07 
+  1 9 0.13 13 0.07 17 0.07 21 0.07 37 0.07 41 0.07 42 0.07 44 0.07 45 0.07 49 0.13 
+  2 9 0.33 12 0.33 33 0.33 

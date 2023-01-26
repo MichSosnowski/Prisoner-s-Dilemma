@@ -1054,6 +1054,8 @@ class Prisoners(QObject):
             elif self.players != 2:
                 self.SUM_with_opponents = [0 for i in range(self.pop_size)]
                 self.c_of_opponents = [0 for i in range(self.pop_size)]
+                self.history_id = list()
+                self.tournaments = list()
                 self.set_gener_history_freq()
                 self.history_freq = list()
                 self.duelNPD()

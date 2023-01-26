@@ -10,9 +10,11 @@
 # mutation_prob = 0.003000
 # elitist_strategy = False
 # num_of_runs = 1
-# seed = 1575408439626499
+# seed = 4023704936450720
 # freq_gen_start = 30
 # delta_freq = 10
 #  1 2 3
 # gen best_fit avg_fit avg_N_of_C %_avg_C
   0 1.50 1.00 0.33 0.11
+  1 2.30 2.10 0.36 0.12
+  2 3.00 2.60 0.43 0.14
