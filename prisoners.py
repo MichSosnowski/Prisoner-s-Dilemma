@@ -373,6 +373,7 @@ class Prisoners(QObject):
     def writeData(self):
         if self.debug == True and self.players == 2 and self.pop_size < 4:
             with open('debug.txt', 'a') as file:
+                file.write('print_11:\n\n')
                 file.write('Strategies:\n')
                 with open(self.strategies, 'r') as file2:
                     for line in file2: file.write(line)
@@ -381,6 +382,7 @@ class Prisoners(QObject):
                 file.write('\n')
         if self.debug == True and self.players != 2 and self.pop_size < 5:
             with open('debug.txt', 'a') as file:
+                file.write('print_21:\n\n')
                 file.write('Strategies_N:\n')
                 with open(self.strategies, 'r') as file2:
                     for line in file2: file.write(line)
@@ -392,13 +394,15 @@ class Prisoners(QObject):
 
     def writeData2(self):
         with open('debug.txt', 'a') as file:
-            file.write('\nP1_strat:\n')
+            file.write('\nprint_12:\n\n')
+            file.write('P1_strat:\n')
             file.write(' '.join([str(self.P1_strat[i]) for i in range(len(self.P1_strat))]))
             file.write('\n\nP2_strat:\n')
             file.write(' '.join([str(self.P2_strat[i]) for i in range(len(self.P2_strat))]))
             file.write('\n\nstrat_id_1 = ' + str(self.strat_id_1))
             file.write('\nstrat_id_2 = ' + str(self.strat_id_2))
-            file.write('\n\nc_of_opponents:\n')
+            file.write('\n\nprint_13:\n\n')
+            file.write('c_of_opponents:\n')
             file.write(' '.join([str(self.c_of_opponents[i]) for i in range(len(self.c_of_opponents))]))
             file.write('\n\ngener_history_freq:\n')
             file.write(' '.join([str(self.gener_history_freq[i]) for i in range(len(self.gener_history_freq))]))
@@ -406,7 +410,8 @@ class Prisoners(QObject):
 
     def writeData3(self, game):
         with open('debug.txt', 'a') as file:
-            file.write('\nTOURNAMENT - 2 players\n\n')
+            file.write('\nprint_14:\n\n')
+            file.write('TOURNAMENT - 2 players\n\n')
             file.write('game = %d\n' % game)
             file.write('curr_action_P1 = %d\n' % self.curr_action_P1)
             file.write('curr_action_P2 = %d\n' % self.curr_action_P2)
@@ -420,14 +425,15 @@ class Prisoners(QObject):
             file.write(' '.join([str(self.P1_preh[i]) for i in range(len(self.P1_preh))]))
             file.write('\nP2_preh:\n')
             file.write(' '.join([str(self.P2_preh[i]) for i in range(len(self.P2_preh))]))
-            file.write('strat_id_1 = ' + str(self.strat_id_1))
+            file.write('\nstrat_id_1 = ' + str(self.strat_id_1))
             file.write('\nstrat_id_2 = ' + str(self.strat_id_2))
             file.write('\ngener_history_freq:\n')
             file.write(' '.join([str(self.gener_history_freq[i]) for i in range(len(self.gener_history_freq))]) + '\n')
 
     def writeData4(self):
         with open('debug.txt', 'a') as file:
-            file.write('\n\nAfter GA operators\n\n')
+            file.write('\n\nprint_31:\n\n')
+            file.write('After GA operators\n\n')
             file.write('Temp_strategies:\n')
             with open(self.tempstrategies, 'r') as file2:
                 for line in file2: file.write(line)
@@ -442,6 +448,7 @@ class Prisoners(QObject):
 
     def writeData5(self):
         with open('debug.txt', 'a') as file:
+            file.write('\nprint_22:\n\n')
             file.write('id_N_players:\n')
             for i in range(len(self.id_N_players)): file.write(str(self.id_N_players[i]) + ' ')
             file.write('\n\nc_of_opponents:\n')
@@ -454,7 +461,8 @@ class Prisoners(QObject):
 
     def writeData6(self, k):
         with open('debug.txt', 'a') as file:
-            file.write('\n\nTOURNAMENT_N_PLAYERS\n\n')
+            file.write('\n\nprint_23:\n\n')
+            file.write('TOURNAMENT_N_PLAYERS\n\n')
             file.write('k = %d\n' % k)
             file.write('curr_action_N_players:\n')
             for i in range(self.players): file.write(str(self.curr_action_N_players[i]) + ' ')
@@ -535,8 +543,8 @@ class Prisoners(QObject):
         self.c_of_opponents[self.id_P1] += 1
         self.c_of_opponents[self.id_P2] += 1
         self.gener_history_freq = [0 for i in range(len(self.P1_strat))]
-        #self.gener_history_freq[self.strat_id_1] += 1
-        #self.gener_history_freq[self.strat_id_2] += 1
+        self.gener_history_freq[self.strat_id_1] += 1
+        self.gener_history_freq[self.strat_id_2] += 1
         self.history_freq = [0 for i in range(len(self.P1_strat))]
         if self.num_of_runs == 1:
             with open('.\\RESULTS\\result_2.txt', 'a') as file:
@@ -689,9 +697,11 @@ class Prisoners(QObject):
             else:
                 temp = self.c_of_opponents
                 temp1 = self.SUM_with_opponents
+                temp2 = self.gener_history_freq
                 self.ZERO_2PD_structures()
                 self.c_of_opponents = temp
                 self.SUM_with_opponents = temp1
+                self.gener_history_freq = temp2
                 self.id_P1 = self.id
                 self.id_P2 = self.rng.randint(0, self.pop_size - 1)
                 while self.id_P2 == self.id_P1: self.id_P2 = self.rng.randint(0, self.pop_size - 1)
@@ -707,14 +717,13 @@ class Prisoners(QObject):
                     self.P2_preh[i + 1] = self.P1_preh[i]
                     i += 2
                     if i >= len(self.P1_preh): break
-                self.gener_history_freq = [0 for i in range(len(self.P1_strat))]
                 self.strat_id_1 = self.toDecimal(self.P1_preh)
                 self.strat_id_2 = self.toDecimal(self.P2_preh)
                 self.c_of_opponents[self.id_P1] += 1
                 self.c_of_opponents[self.id_P2] += 1
-                #self.gener_history_freq[self.strat_id_1] += 1
-                #self.gener_history_freq[self.strat_id_2] += 1
-        if self.debug == True: self.writeData2()
+                self.gener_history_freq[self.strat_id_1] += 1
+                self.gener_history_freq[self.strat_id_2] += 1
+                if self.debug == True: self.writeData2()
 
     def duelNPD(self):
         self.duel_fulfilment = False
@@ -992,6 +1001,7 @@ class Prisoners(QObject):
             if self.players == 2:
                 self.SUM_with_opponents = [0 for i in range(self.pop_size)]
                 self.c_of_opponents = [0 for i in range(self.pop_size)]
+                self.gener_history_freq = [0 for i in range(len(self.P1_strat))]
                 self.history_freq = [0 for i in range(len(self.P1_strat))]
                 self.duel2PD()
             elif self.players != 2:
