@@ -1,4 +1,4 @@
-# NpPD
+# 4pPD
 # prob_of_init_C = 0.500000
 # num_of_tournaments = 151
 # num_of_opponents = 10
@@ -10,18 +10,18 @@
 # mutation_prob = 0.003000
 # elitist_strategy = False
 # num_of_runs = 1
-# seed = 4173533103343948
+# seed = 6054137747200320
 # freq_gen_start = 30
 # delta_freq = 10
 # 1 2
 # history freq_of_history
-  15 0.02
-  65 0.03
-  82 0.02
-  109 0.03
-  121 0.02
-  150 0.03
-  178 0.02
-  373 0.02
-  393 0.03
-  457 0.02
+  41 0.00
+  69 0.00
+  80 0.00
+  104 0.00
+  205 0.00
+  296 0.00
+  394 0.00
+  456 0.00
+  505 0.00
+  511 0.94
