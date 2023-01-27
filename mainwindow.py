@@ -19,7 +19,6 @@ matplotlib.use('Qt5Agg')
 file = 'form.ui'                                    # form.ui filename
 file2 = 'dialog.ui'                                 # dialog.ui filename
 windowTitle = "Prisoner's Dilemma"                  # main window title
-dialogTitle = "PD Debug"                            # debug dialog
 width = 1000                                        # main window width
 height = 700                                        # main window height
 bottomN = 3                                         # the smallest number of players in NpPD
@@ -213,9 +212,6 @@ class MainWindow(QMainWindow):
         self.dilemma.moveToThread(self.thread)
         self.thread.started.connect(self.dilemma.launch)
         self.thread.start()
-
-    def closeEvent(self, event):
-        self.thread.terminate()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
