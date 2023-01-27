@@ -46,6 +46,7 @@ class Ui_MainWindow(object):
         self.groupBox.setObjectName(u"groupBox")
         self.gridLayout_2 = QGridLayout(self.groupBox)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.gridLayout_2.setVerticalSpacing(0)
         self.PDNp = QRadioButton(self.groupBox)
         self.PDNp.setObjectName(u"PDNp")
 

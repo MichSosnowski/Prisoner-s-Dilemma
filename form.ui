@@ -41,6 +41,9 @@
        <string>PD game parameters</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,0">
+       <property name="verticalSpacing">
+        <number>0</number>
+       </property>
        <item row="0" column="1">
         <widget class="QRadioButton" name="PDNp">
          <property name="text">
