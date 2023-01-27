@@ -4,7 +4,6 @@
 
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout, QFileDialog
-from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QIntValidator, QDoubleValidator
 from PySide6.QtCore import QThread
 import matplotlib, numpy, math
@@ -12,11 +11,11 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from scipy.interpolate import pchip
 from operator import itemgetter
+from ui_form import Ui_MainWindow
 import prisoners
 
 matplotlib.use('Qt5Agg')
 
-file = 'form.ui'                                    # form.ui filename
 windowTitle = "Prisoner's Dilemma"                  # main window title
 width = 1000                                        # main window width
 height = 700                                        # main window height
@@ -31,63 +30,62 @@ titlePlot = 'average total payoff (ATP)'            # title for the first plot
 titlePlot2 = 'frequencies of applied strategies'    # title for the second plot
 fontSize = 9                                        # font size for titles of plots
 
-class MainWindow(QMainWindow):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+class MainWindow(QMainWindow, Ui_MainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
+        self.setupUi(self)
         self.load_ui()
 
     def load_ui(self):
-        loader = QUiLoader()
-        self.window = loader.load(file, None)
-        self.window.setWindowTitle(windowTitle)
-        self.window.resize(width, height)
+        self.setWindowTitle(windowTitle)
+        self.resize(width, height)
         self.setConnects()
         self.setValidators()
         self.showPlots()
-        self.window.show()
+        self.show()
 
     def setConnects(self):
-        self.window.PD2p.clicked.connect(self.selectOption)
-        self.window.PDNp.clicked.connect(self.selectOption)
-        self.window.pushButton.clicked.connect(self.start)
+        self.PD2p.clicked.connect(self.selectOption)
+        self.PDNp.clicked.connect(self.selectOption)
+        self.pushButton.clicked.connect(self.start)
 
     def setValidators(self):
-        self.window.NlineEdit.setValidator(QIntValidator(bottomN, top))
-        self.window.C1lineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.C2lineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.C3lineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.C4lineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.D1lineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.D2lineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.D3lineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.D4lineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.problineEdit.setValidator(QDoubleValidator(bottom, topD, numberAfterDot))
-        self.window.tourlineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.opplineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.prelineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.poplineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.genlineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.toursizelineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.crosslineEdit.setValidator(QDoubleValidator(bottom, topD, numberAfterDot))
-        self.window.mutlineEdit.setValidator(QDoubleValidator(bottom, topD, numberAfterDot))
-        self.window.runslineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.freqlineEdit.setValidator(QIntValidator(bottom, top))
-        self.window.deltalineEdit.setValidator(QIntValidator(bottom, top))
+        self.NlineEdit.setValidator(QIntValidator(bottomN, top))
+        self.C1lineEdit.setValidator(QIntValidator(bottom, top))
+        self.C2lineEdit.setValidator(QIntValidator(bottom, top))
+        self.C3lineEdit.setValidator(QIntValidator(bottom, top))
+        self.C4lineEdit.setValidator(QIntValidator(bottom, top))
+        self.D1lineEdit.setValidator(QIntValidator(bottom, top))
+        self.D2lineEdit.setValidator(QIntValidator(bottom, top))
+        self.D3lineEdit.setValidator(QIntValidator(bottom, top))
+        self.D4lineEdit.setValidator(QIntValidator(bottom, top))
+        self.problineEdit.setValidator(QDoubleValidator(bottom, topD, numberAfterDot))
+        self.tourlineEdit.setValidator(QIntValidator(bottom, top))
+        self.opplineEdit.setValidator(QIntValidator(bottom, top))
+        self.prelineEdit.setValidator(QIntValidator(bottom, top))
+        self.poplineEdit.setValidator(QIntValidator(bottom, top))
+        self.genlineEdit.setValidator(QIntValidator(bottom, top))
+        self.toursizelineEdit.setValidator(QIntValidator(bottom, top))
+        self.crosslineEdit.setValidator(QDoubleValidator(bottom, topD, numberAfterDot))
+        self.mutlineEdit.setValidator(QDoubleValidator(bottom, topD, numberAfterDot))
+        self.runslineEdit.setValidator(QIntValidator(bottom, top))
+        self.freqlineEdit.setValidator(QIntValidator(bottom, top))
+        self.deltalineEdit.setValidator(QIntValidator(bottom, top))
 
     def showPlots(self):
         self.fig = Figure(tight_layout = True, facecolor=color)
-        self.plot = self.fig.add_subplot(subplot)
-        self.plot.plot([])
-        self.plot.xaxis.set_visible(False)
-        self.plot.yaxis.set_visible(False)
-        self.plot.set_title(titlePlot, fontsize=fontSize)
+        self.plots = self.fig.add_subplot(subplot)
+        self.plots.plot([])
+        self.plots.xaxis.set_visible(False)
+        self.plots.yaxis.set_visible(False)
+        self.plots.set_title(titlePlot, fontsize=fontSize)
 
         self.fig2 = Figure(tight_layout = True, facecolor=color)
-        self.plot2 = self.fig2.add_subplot(subplot)
-        self.plot2.plot([])
-        self.plot2.xaxis.set_visible(False)
-        self.plot2.yaxis.set_visible(False)
-        self.plot2.set_title(titlePlot2, fontsize=fontSize)
+        self.plots2 = self.fig2.add_subplot(subplot)
+        self.plots2.plot([])
+        self.plots2.xaxis.set_visible(False)
+        self.plots2.yaxis.set_visible(False)
+        self.plots2.set_title(titlePlot2, fontsize=fontSize)
 
         self.wykres = FigureCanvasQTAgg(self.fig)
         self.wykres2 = FigureCanvasQTAgg(self.fig2)
@@ -98,18 +96,18 @@ class MainWindow(QMainWindow):
         self.layout2 = QGridLayout()
         self.layout2.addWidget(self.wykres2)
 
-        self.window.plot.setLayout(self.layout)
-        self.window.plot2.setLayout(self.layout2)
+        self.plot.setLayout(self.layout)
+        self.plot2.setLayout(self.layout2)
 
     def selectOption(self):
-        if self.window.PD2p.isChecked() == True:
-            self.window.N.setEnabled(False)
-            self.window.NlineEdit.setEnabled(False)
-            self.window.groupBox2pPD.setEnabled(True)
-        elif self.window.PDNp.isChecked() == True:
-            self.window.N.setEnabled(True)
-            self.window.NlineEdit.setEnabled(True)
-            self.window.groupBox2pPD.setEnabled(False)
+        if self.PD2p.isChecked() == True:
+            self.N.setEnabled(False)
+            self.NlineEdit.setEnabled(False)
+            self.groupBox2pPD.setEnabled(True)
+        elif self.PDNp.isChecked() == True:
+            self.N.setEnabled(True)
+            self.NlineEdit.setEnabled(True)
+            self.groupBox2pPD.setEnabled(False)
 
     def showFileDialog(self, title):
         prisoners.filename = QFileDialog.getOpenFileName(self, title, '.\\DATA', 'Text files (*.txt)')
@@ -123,19 +121,19 @@ class MainWindow(QMainWindow):
         gens = [results[i][0] for i in range(len(results))]
         best = [results[i][1] for i in range(len(results))]
         avg = [results[i][2] for i in range(len(results))]
-        self.plot.clear()
-        self.plot.set_title(titlePlot, fontsize=fontSize)
-        self.plot.plot(gens, best, label = 'average total payoff of best indiv', color='orange')
-        self.plot.plot(gens, avg, label = 'average payoff of the population', color='blue')
-        self.plot.xaxis.set_visible(True)
-        self.plot.yaxis.set_visible(True)
-        self.plot.set_xlabel('generations')
-        self.plot.legend(fontsize = 8)
+        self.plots.clear()
+        self.plots.set_title(titlePlot, fontsize=fontSize)
+        self.plots.plot(gens, best, label = 'average total payoff of best indiv', color='orange')
+        self.plots.plot(gens, avg, label = 'average payoff of the population', color='blue')
+        self.plots.xaxis.set_visible(True)
+        self.plots.yaxis.set_visible(True)
+        self.plots.set_xlabel('generations')
+        self.plots.legend(fontsize = 8)
         self.wykres.draw()
 
     def drawScreen2(self, path, gen):
         players = 2
-        if self.window.PD2p.isChecked() == False: players = int(self.window.NlineEdit.text())
+        if self.PD2p.isChecked() == False: players = int(self.NlineEdit.text())
         results = list()
         history = []
         if players == 2:
@@ -150,7 +148,7 @@ class MainWindow(QMainWindow):
                     if line.startswith('#'): continue
                     line = line.split()
                     results.append([int(line[0]), float(line[1])])
-            history = [i for i in range(2 ** (int(self.window.prelineEdit.text()) + int(self.window.prelineEdit.text()) * math.ceil(math.log2(players))))]
+            history = [i for i in range(2 ** (int(self.prelineEdit.text()) + int(self.prelineEdit.text()) * math.ceil(math.log2(players))))]
             temp = results[:]
             results = [0 for i in range(len(history))]
             k = 0
@@ -164,49 +162,49 @@ class MainWindow(QMainWindow):
         elems = f(xnew)
         for i in range(len(elems)):
             if elems[i] < 0: elems[i] = 0
-        self.plot2.plot(xnew, elems, label = ('gen %d' % gen))
-        self.plot2.xaxis.set_visible(True)
-        self.plot2.yaxis.set_visible(True)
-        self.plot2.set_xlabel('strategies')
-        self.plot2.legend(fontsize = 8)
+        self.plots2.plot(xnew, elems, label = ('gen %d' % gen))
+        self.plots2.xaxis.set_visible(True)
+        self.plots2.yaxis.set_visible(True)
+        self.plots2.set_xlabel('strategies')
+        self.plots2.legend(fontsize = 8)
         self.wykres2.draw()
 
     def clearScreens(self):
-        self.plot.clear()
-        self.plot.plot([])
-        self.plot.xaxis.set_visible(False)
-        self.plot.yaxis.set_visible(False)
-        self.plot.set_title(titlePlot, fontsize=fontSize)
+        self.plots.clear()
+        self.plots.plot([])
+        self.plots.xaxis.set_visible(False)
+        self.plots.yaxis.set_visible(False)
+        self.plots.set_title(titlePlot, fontsize=fontSize)
         self.wykres.draw()
-        self.plot2.clear()
-        self.plot2.plot([])
-        self.plot2.xaxis.set_visible(False)
-        self.plot2.yaxis.set_visible(False)
-        self.plot2.set_title(titlePlot2, fontsize=fontSize)
+        self.plots2.clear()
+        self.plots2.plot([])
+        self.plots2.xaxis.set_visible(False)
+        self.plots2.yaxis.set_visible(False)
+        self.plots2.set_title(titlePlot2, fontsize=fontSize)
         self.wykres2.draw()
 
     def start(self):
-        self.window.pushButton.setEnabled(False)
+        self.pushButton.setEnabled(False)
         self.clearScreens()
         players = 2
-        data = [int(self.window.C1lineEdit.text()), int(self.window.C2lineEdit.text()), int(self.window.C3lineEdit.text()),
-                int(self.window.D1lineEdit.text()), int(self.window.D2lineEdit.text()), int(self.window.C4lineEdit.text()),
-                int(self.window.D3lineEdit.text()), int(self.window.D4lineEdit.text()), self.window.problineEdit.text(),
-                int(self.window.tourlineEdit.text()), int(self.window.opplineEdit.text()), int(self.window.prelineEdit.text()),
-                int(self.window.poplineEdit.text()), int(self.window.genlineEdit.text()), int(self.window.toursizelineEdit.text()),
-                self.window.crosslineEdit.text(), self.window.mutlineEdit.text(), self.window.checkBox.isChecked(),
-                int(self.window.runslineEdit.text()), self.window.seedlineEdit.text(), int(self.window.freqlineEdit.text()),
-                int(self.window.deltalineEdit.text()), self.window.checkBox_2.isChecked()]
+        data = [int(self.C1lineEdit.text()), int(self.C2lineEdit.text()), int(self.C3lineEdit.text()),
+                int(self.D1lineEdit.text()), int(self.D2lineEdit.text()), int(self.C4lineEdit.text()),
+                int(self.D3lineEdit.text()), int(self.D4lineEdit.text()), self.problineEdit.text(),
+                int(self.tourlineEdit.text()), int(self.opplineEdit.text()), int(self.prelineEdit.text()),
+                int(self.poplineEdit.text()), int(self.genlineEdit.text()), int(self.toursizelineEdit.text()),
+                self.crosslineEdit.text(), self.mutlineEdit.text(), self.checkBox.isChecked(),
+                int(self.runslineEdit.text()), self.seedlineEdit.text(), int(self.freqlineEdit.text()),
+                int(self.deltalineEdit.text()), self.checkBox_2.isChecked()]
         for i in range(len(data)):
             if type(data[i]) == type(str()) and data[i] != '':
                 data[i] = float(data[i].replace(',', '.'))
-        if self.window.PD2p.isChecked() == False: players = int(self.window.NlineEdit.text())
+        if self.PD2p.isChecked() == False: players = int(self.NlineEdit.text())
         self.dilemma = prisoners.Prisoners(players, data)
         self.dilemma.signals.file.connect(self.showFileDialog)
         self.dilemma.signals.draw1.connect(self.drawScreen1)
         self.dilemma.signals.draw2.connect(self.drawScreen2)
         self.dilemma.signals.clear.connect(self.clearScreens)
-        self.dilemma.signals.end.connect(lambda: self.window.pushButton.setEnabled(True))
+        self.dilemma.signals.end.connect(lambda: self.pushButton.setEnabled(True))
         self.thread = QThread(parent = self)
         self.dilemma.moveToThread(self.thread)
         self.thread.started.connect(self.dilemma.launch)
