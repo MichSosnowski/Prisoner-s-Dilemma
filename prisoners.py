@@ -20,7 +20,7 @@ class PrisonersSignals(QObject):
 
 class Prisoners(QObject):
     def __init__(self, players, data):
-        super(Prisoners, self).__init__()
+        super().__init__()
         self.players = players
         self.signals = PrisonersSignals()
         if self.players == 2: self.payments = [data[i] for i in range(8)]
