@@ -17,7 +17,6 @@ import prisoners
 matplotlib.use('Qt5Agg')
 
 file = 'form.ui'                                    # form.ui filename
-file2 = 'dialog.ui'                                 # dialog.ui filename
 windowTitle = "Prisoner's Dilemma"                  # main window title
 width = 1000                                        # main window width
 height = 700                                        # main window height
