@@ -205,6 +205,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.dilemma.signals.draw2.connect(self.drawScreen2)
         self.dilemma.signals.clear.connect(self.clearScreens)
         self.dilemma.signals.end.connect(lambda: self.pushButton.setEnabled(True))
+        self.dilemma.signals.end.connect(lambda: self.thread.quit())
         self.thread = QThread(parent = self)
         self.dilemma.moveToThread(self.thread)
         self.thread.started.connect(self.dilemma.launch)
