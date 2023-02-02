@@ -723,13 +723,13 @@ class Prisoners(QObject):
                 self.SUM_with_opponents[population_id[i]] += self.payoff_N_players[i]
             self.choices_C += coops
             self.choices_all += len(self.curr_action_N_players)
-            if k < (self.num_of_tournaments - 1):
-                self.prehistory = self.curr_action_N_players + self.prehistory[:-self.players]
-                self.N_players_preh.clear()
-                self.set_N_players_preh()
-                self.N_players_strat_id.clear()
-                self.set_N_players_strat_id()
-                self.update_gener_history_freq()
+            #if k < (self.num_of_tournaments - 1):
+            self.prehistory = self.curr_action_N_players + self.prehistory[:-self.players]
+            self.N_players_preh.clear()
+            self.set_N_players_preh()
+            self.N_players_strat_id.clear()
+            self.set_N_players_strat_id()
+            self.update_gener_history_freq()
             if self.debug == True: self.writeData6(k + 1)
 
 
@@ -1050,6 +1050,8 @@ class Prisoners(QObject):
                 self.c_of_opponents = [0 for i in range(self.pop_size)]
                 self.gener_history_freq = [0 for i in range(len(self.P1_strat))]
                 self.history_freq = [0 for i in range(len(self.P1_strat))]
+                self.c_of_opponents[self.id_P1] += 1
+                self.c_of_opponents[self.id_P2] += 1
                 self.duel2PD()
             elif self.players != 2:
                 self.SUM_with_opponents = [0 for i in range(self.pop_size)]
