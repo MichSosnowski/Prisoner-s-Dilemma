@@ -73,14 +73,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.deltalineEdit.setValidator(QIntValidator(bottom, top))
 
     def showPlots(self):
-        self.fig = Figure(tight_layout = True, facecolor=color)
+        self.fig = Figure(tight_layout=True, facecolor=color)
         self.plots = self.fig.add_subplot(subplot)
         self.plots.plot([])
         self.plots.xaxis.set_visible(False)
         self.plots.yaxis.set_visible(False)
         self.plots.set_title(titlePlot, fontsize=fontSize)
 
-        self.fig2 = Figure(tight_layout = True, facecolor=color)
+        self.fig2 = Figure(tight_layout=True, facecolor=color)
         self.plots2 = self.fig2.add_subplot(subplot)
         self.plots2.plot([])
         self.plots2.xaxis.set_visible(False)

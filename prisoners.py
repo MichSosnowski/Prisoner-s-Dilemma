@@ -456,6 +456,21 @@ class Prisoners(QObject):
             file.write('\n\nN_players_strategies:\n')
             with open(self.strategies, 'r') as file2:
                 for line in file2: file.write(line)
+            file.write('\n\nN_players_preh:\n')
+            w = 0
+            text = ''
+            for i in range(len(self.N_players_preh)):
+                if type(self.N_players_preh[i]) == str:
+                    text += self.N_players_preh[i]
+                    w += 1
+                    if w == self.prehistory_l:
+                        text += '\n'
+                        w = 0
+                else:
+                    if self.N_players_preh[i] == 0: text += ' 0 '
+                    else: text += ' 1 '
+            text = text[:-1]
+            file.write(text)
             file.write('\n\nN_players_strat_id:\n')
             for i in range(len(self.N_players_strat_id)): file.write(str(self.N_players_strat_id[i]) + ' ')
             file.write('\n\ngener_history_freq:\n')
@@ -656,7 +671,7 @@ class Prisoners(QObject):
                         break
                     number += 1
                 Nstrats.close()
-            self.c_of_opponents[i] += (self.players - 1)
+            self.c_of_opponents[i] += 1
         self.set_N_players_preh()
         self.set_N_players_strat_id()
         self.set_gener_history_freq()
@@ -723,7 +738,6 @@ class Prisoners(QObject):
                 self.SUM_with_opponents[population_id[i]] += self.payoff_N_players[i]
             self.choices_C += coops
             self.choices_all += len(self.curr_action_N_players)
-            #if k < (self.num_of_tournaments - 1):
             self.prehistory = self.curr_action_N_players + self.prehistory[:-self.players]
             self.N_players_preh.clear()
             self.set_N_players_preh()
@@ -788,12 +802,12 @@ class Prisoners(QObject):
                 self.SUM_with_opponents = temp1
                 self.id_N_players = [-1 for i in range(self.players)]
                 self.id_N_players[0] = self.id
-                self.c_of_opponents[self.id] += (self.players - 1)
+                self.c_of_opponents[self.id] += 1
                 for i in range(1, self.players):
                     id = self.rng.randint(0, self.pop_size - 1)
                     while (id in self.id_N_players) == True: id = self.rng.randint(0, self.pop_size - 1)
                     self.id_N_players[i] = id
-                    self.c_of_opponents[id] += (self.players - 1)
+                    self.c_of_opponents[id] += 1
                 for i in range(self.players):
                     number = 0
                     with open(self.Nstrategies, 'a') as file:
@@ -1060,6 +1074,35 @@ class Prisoners(QObject):
                 self.tournaments = list()
                 self.set_gener_history_freq()
                 self.history_freq = list()
+                temp = self.c_of_opponents
+                temp1 = self.SUM_with_opponents
+                self.ZERO_NPD_structures()
+                with open(self.Nstrategies, 'w') as file: pass
+                self.c_of_opponents = temp
+                self.SUM_with_opponents = temp1
+                self.id_N_players = [-1 for i in range(self.players)]
+                self.id_N_players[0] = self.id
+                self.c_of_opponents[self.id] += 1
+                for i in range(1, self.players):
+                    id = self.rng.randint(0, self.pop_size - 1)
+                    while (id in self.id_N_players) == True: id = self.rng.randint(0, self.pop_size - 1)
+                    self.id_N_players[i] = id
+                    self.c_of_opponents[id] += 1
+                for i in range(self.players):
+                    number = 0
+                    with open(self.Nstrategies, 'a') as file:
+                        strats = open(self.strategies, 'r')
+                        for line in strats:
+                            if number == self.id_N_players[i]:
+                                file.write(line)
+                                break
+                            number += 1
+                        strats.close()
+                self.prehistory = [self.rng.randint(0, 1) for i in range(self.prehistory_l * self.players)]
+                self.set_N_players_preh()
+                self.set_N_players_strat_id()
+                self.update_gener_history_freq()
+                if self.debug == True: self.writeData5()
                 self.duelNPD()
             self.fitnessStatistics()
 
