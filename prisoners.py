@@ -814,7 +814,8 @@ class Prisoners(QObject):
                         strats = open(self.strategies, 'r')
                         for line in strats:
                             if number == self.id_N_players[i]:
-                                file.write(line)
+                                if line.endswith('\n'): file.write(line)
+                                else: file.write(line + '\n')
                                 break
                             number += 1
                         strats.close()
@@ -1094,7 +1095,8 @@ class Prisoners(QObject):
                         strats = open(self.strategies, 'r')
                         for line in strats:
                             if number == self.id_N_players[i]:
-                                file.write(line)
+                                if line.endswith('\n'): file.write(line)
+                                else: file.write(line + '\n')
                                 break
                             number += 1
                         strats.close()
