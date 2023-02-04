@@ -454,7 +454,7 @@ class Prisoners(QObject):
             file.write('\n\nc_of_opponents:\n')
             for i in range(len(self.c_of_opponents)): file.write(str(self.c_of_opponents[i]) + ' ')
             file.write('\n\nN_players_strategies:\n')
-            with open(self.strategies, 'r') as file2:
+            with open(self.Nstrategies, 'r') as file2:
                 for line in file2: file.write(line)
             file.write('\n\nN_players_preh:\n')
             w = 0
