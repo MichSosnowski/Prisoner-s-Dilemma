@@ -527,7 +527,7 @@ class Prisoners(QObject):
             file.write('\n\nN_players_strategies:\n')
             with open(self.strategies, 'r') as file2:
                 for line in file2: file.write(line)
-            file.write('\nPrehistory_N:\n')
+            file.write('\n\nPrehistory_N:\n')
             for i in range(len(self.prehistory)):
                 if i % self.players == 0 and i != 0: file.write('\n')
                 file.write(str(self.prehistory[i]) + ' ')
@@ -796,10 +796,14 @@ class Prisoners(QObject):
             else:
                 temp = self.c_of_opponents
                 temp1 = self.SUM_with_opponents
+                temp2 = self.history_id
+                temp3 = self.tournaments
                 self.ZERO_NPD_structures()
                 with open(self.Nstrategies, 'w') as file: pass
                 self.c_of_opponents = temp
                 self.SUM_with_opponents = temp1
+                self.history_id = temp2
+                self.tournaments = temp3
                 self.id_N_players = [-1 for i in range(self.players)]
                 self.id_N_players[0] = self.id
                 self.c_of_opponents[self.id] += 1
