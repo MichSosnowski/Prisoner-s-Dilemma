@@ -525,7 +525,7 @@ class Prisoners(QObject):
             file.write('id_N_players:\n')
             for i in range(len(self.id_N_players)): file.write(str(self.id_N_players[i]) + ' ')
             file.write('\n\nN_players_strategies:\n')
-            with open(self.strategies, 'r') as file2:
+            with open(self.Nstrategies, 'r') as file2:
                 for line in file2: file.write(line)
             file.write('\n\nPrehistory_N:\n')
             for i in range(len(self.prehistory)):
