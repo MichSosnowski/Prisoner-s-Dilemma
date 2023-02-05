@@ -68,7 +68,7 @@ class Prisoners(QObject):
             self.bests = [[0 for i in range(self.num_of_generations + 1)] for j in range(self.num_of_runs)]
         elif self.players != 2:
             self.choices_C = 0
-            self.choices_all = 0
+            self.tournaments_num = 0
             self.createResult1N()
             self.createResult2N()
 
@@ -737,7 +737,6 @@ class Prisoners(QObject):
             for i in range(self.players):
                 self.SUM_with_opponents[population_id[i]] += self.payoff_N_players[i]
             self.choices_C += coops
-            self.choices_all += len(self.curr_action_N_players)
             self.prehistory = self.curr_action_N_players + self.prehistory[:-self.players]
             self.N_players_preh.clear()
             self.set_N_players_preh()
@@ -745,6 +744,7 @@ class Prisoners(QObject):
             self.set_N_players_strat_id()
             self.update_gener_history_freq()
             if self.debug == True: self.writeData6(k + 1)
+        self.tournaments_num += self.num_of_tournaments
 
 
     def duel2PD(self):
@@ -916,8 +916,10 @@ class Prisoners(QObject):
                 temp2.pop(ind)
             temp.sort()
             with open('.\\RESULTS\\result_1N.txt', 'a') as file:
-                choices = self.choices_C / self.choices_all
+                choices = self.choices_C / self.tournaments_num
                 file.write('  %d %.2f %.2f %.2f %.2f\n' % (self.gen, round(self.best_fit, 2), round(self.avg_fit, 2), round(choices, 2), round((choices / self.players), 2)))
+            self.choices_C = 0
+            self.tournaments_num = 0
             with open('.\\RESULTS\\result_2N.txt', 'a') as file:
                 file.write('  %d ' % self.gen)
                 for i in range(len(temp)):
