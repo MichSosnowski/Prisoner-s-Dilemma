@@ -2,8 +2,9 @@
 # This file consists of code which is used to solve Prisoner's Dilemma.
 # It is used by mainwindow.py
 import copy
+import functools
 import time
-from itertools import repeat
+from itertools import repeat, cycle
 
 from PySide6.QtCore import QObject, Slot, Signal
 from statistics import mean
@@ -11,11 +12,15 @@ import tempfile, random, math, os, glob
 import numpy as np
 import re
 
-from more_itertools import roundrobin, flatten
+from more_itertools import roundrobin, flatten, grouper
 
-maxrange = 9999999999999999                     # max range of random seed
-filename = ''                                   # name of file to open
+maxrange = 9999999999999999  # max range of random seed
+filename = ''  # name of file to open
 from fs.memoryfs import MemoryFS
+N_bin = 16
+bin_dict = dict()
+for i in range(16):
+    pass
 
 class PrisonersSignals(QObject):
     file = Signal(str)
@@ -24,10 +29,12 @@ class PrisonersSignals(QObject):
     clear = Signal()
     end = Signal()
 
+
 class Prisoners(QObject):
     def __init__(self, players, data):
         super().__init__()
         self.players = players
+        self.log_n_players = math.ceil(math.log2(self.players))
         self.signals = PrisonersSignals()
         if self.players == 2: self.payments = [data[i] for i in range(8)]
         self.prob_of_init_C = data[8]
@@ -95,8 +102,10 @@ class Prisoners(QObject):
             file.write('# tournament_size = %d\n' % self.tournament_size)
             file.write('# crossover_prob = %f\n' % self.crossover_prob)
             file.write('# mutation_prob = %f\n' % self.mutation_prob)
-            if self.elitist == True: file.write('# elitist_strategy = True\n')
-            else: file.write('# elitist_strategy = False\n')
+            if self.elitist == True:
+                file.write('# elitist_strategy = True\n')
+            else:
+                file.write('# elitist_strategy = False\n')
             file.write('# num_of_runs = %d\n' % self.num_of_runs)
             file.write('# seed = %d\n' % self.seed)
             file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
@@ -120,8 +129,10 @@ class Prisoners(QObject):
             file.write('# tournament_size = %d\n' % self.tournament_size)
             file.write('# crossover_prob = %f\n' % self.crossover_prob)
             file.write('# mutation_prob = %f\n' % self.mutation_prob)
-            if self.elitist == True: file.write('# elitist_strategy = True\n')
-            else: file.write('# elitist_strategy = False\n')
+            if self.elitist == True:
+                file.write('# elitist_strategy = True\n')
+            else:
+                file.write('# elitist_strategy = False\n')
             file.write('# num_of_runs = %d\n' % self.num_of_runs)
             file.write('# seed = %d\n' % self.seed)
             file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
@@ -143,8 +154,10 @@ class Prisoners(QObject):
             file.write('# tournament_size = %d\n' % self.tournament_size)
             file.write('# crossover_prob = %f\n' % self.crossover_prob)
             file.write('# mutation_prob = %f\n' % self.mutation_prob)
-            if self.elitist == True: file.write('# elitist_strategy = True\n')
-            else: file.write('# elitist_strategy = False\n')
+            if self.elitist == True:
+                file.write('# elitist_strategy = True\n')
+            else:
+                file.write('# elitist_strategy = False\n')
             file.write('# num_of_runs = %d\n' % self.num_of_runs)
             file.write('# seed = %d\n' % self.seed)
             file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
@@ -162,8 +175,10 @@ class Prisoners(QObject):
             file.write('# tournament_size = %d\n' % self.tournament_size)
             file.write('# crossover_prob = %f\n' % self.crossover_prob)
             file.write('# mutation_prob = %f\n' % self.mutation_prob)
-            if self.elitist == True: file.write('# elitist_strategy = True\n')
-            else: file.write('# elitist_strategy = False\n')
+            if self.elitist == True:
+                file.write('# elitist_strategy = True\n')
+            else:
+                file.write('# elitist_strategy = False\n')
             file.write('# num_of_runs = %d\n' % self.num_of_runs)
             file.write('# seed = %d\n' % self.seed)
             file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
@@ -183,8 +198,10 @@ class Prisoners(QObject):
             file.write('# tournament_size = %d\n' % self.tournament_size)
             file.write('# crossover_prob = %f\n' % self.crossover_prob)
             file.write('# mutation_prob = %f\n' % self.mutation_prob)
-            if self.elitist == True: file.write('# elitist_strategy = True\n')
-            else: file.write('# elitist_strategy = False\n')
+            if self.elitist == True:
+                file.write('# elitist_strategy = True\n')
+            else:
+                file.write('# elitist_strategy = False\n')
             file.write('# num_of_runs = %d\n' % self.num_of_runs)
             file.write('# seed = %d\n' % self.seed)
             file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
@@ -209,8 +226,10 @@ class Prisoners(QObject):
             file.write('# tournament_size = %d\n' % self.tournament_size)
             file.write('# crossover_prob = %f\n' % self.crossover_prob)
             file.write('# mutation_prob = %f\n' % self.mutation_prob)
-            if self.elitist == True: file.write('# elitist_strategy = True\n')
-            else: file.write('# elitist_strategy = False\n')
+            if self.elitist == True:
+                file.write('# elitist_strategy = True\n')
+            else:
+                file.write('# elitist_strategy = False\n')
             file.write('# num_of_runs = %d\n' % self.num_of_runs)
             file.write('# seed = %d\n' % self.seed)
             file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
@@ -232,8 +251,10 @@ class Prisoners(QObject):
             file.write('# tournament_size = %d\n' % self.tournament_size)
             file.write('# crossover_prob = %f\n' % self.crossover_prob)
             file.write('# mutation_prob = %f\n' % self.mutation_prob)
-            if self.elitist == True: file.write('# elitist_strategy = True\n')
-            else: file.write('# elitist_strategy = False\n')
+            if self.elitist == True:
+                file.write('# elitist_strategy = True\n')
+            else:
+                file.write('# elitist_strategy = False\n')
             file.write('# num_of_runs = %d\n' % self.num_of_runs)
             file.write('# seed = %d\n' % self.seed)
             file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
@@ -363,8 +384,10 @@ class Prisoners(QObject):
                 for i in range(self.pop_size):
                     for j in range(self.players ** (2 * self.prehistory_l)):
                         los = self.rng.random()
-                        if los < self.prob_of_init_C: file.write('1 ')
-                        else: file.write('0 ')
+                        if los < self.prob_of_init_C:
+                            file.write('1 ')
+                        else:
+                            file.write('0 ')
                     file.write('\n')
             self.prehistory = [self.rng.randint(0, 1) for i in range(2 * self.prehistory_l)]
         elif self.players != 2 and self.pop_size >= 4:
@@ -372,8 +395,10 @@ class Prisoners(QObject):
                 for i in range(self.pop_size):
                     for j in range(2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))):
                         los = self.rng.random()
-                        if los < self.prob_of_init_C: file.write('1 ')
-                        else: file.write('0 ')
+                        if los < self.prob_of_init_C:
+                            file.write('1 ')
+                        else:
+                            file.write('0 ')
                     file.write('\n')
             self.prehistory = [self.rng.randint(0, 1) for i in range(self.prehistory_l * self.players)]
 
@@ -457,12 +482,15 @@ class Prisoners(QObject):
         with open('debug.txt', 'a') as file:
             file.write('\nprint_22:\n\n')
             file.write('id_N_players:\n')
-            for i in range(len(self.id_N_players)): file.write(str(self.id_N_players[i]) + ' ')
+            for i in range(len(self.id_N_players)):
+                file.write(str(self.id_N_players[i]) + ' ')
             file.write('\n\nc_of_opponents:\n')
-            for i in range(len(self.c_of_opponents)): file.write(str(self.c_of_opponents[i]) + ' ')
+            for i in range(len(self.c_of_opponents)):
+                file.write(str(self.c_of_opponents[i]) + ' ')
             file.write('\n\nN_players_strategies:\n')
             with self.mem_fs.open(self.Nstrategies, 'r') as file2:
-                for line in file2: file.write(line)
+                for line in file2:
+                    file.write(line)
             file.write('\n\nN_players_preh:\n')
             w = 0
             text = ''
@@ -474,8 +502,10 @@ class Prisoners(QObject):
                         text += '\n'
                         w = 0
                 else:
-                    if self.N_players_preh[i] == 0: text += ' 0 '
-                    else: text += ' 1 '
+                    if self.N_players_preh[i] == 0:
+                        text += ' 0 '
+                    else:
+                        text += ' 1 '
             text = text[:-1]
             file.write(text)
             file.write('\n\nN_players_strat_id:\n')
@@ -513,8 +543,10 @@ class Prisoners(QObject):
                         text += '\n'
                         w = 0
                 else:
-                    if self.N_players_preh[i] == 0: text += ' 0 '
-                    else: text += ' 1 '
+                    if self.N_players_preh[i] == 0:
+                        text += ' 0 '
+                    else:
+                        text += ' 1 '
             text = text[:-1]
             file.write(text)
             file.write('\nN_players_strat_id:\n')
@@ -549,8 +581,10 @@ class Prisoners(QObject):
                         text += '\n'
                         w = 0
                 else:
-                    if self.N_players_preh[i] == 0: text += ' 0 '
-                    else: text += ' 1 '
+                    if self.N_players_preh[i] == 0:
+                        text += ' 0 '
+                    else:
+                        text += ' 1 '
             text = text[:-1]
             file.write(text)
             file.write('\n\nN_players_strat_id:\n')
@@ -583,11 +617,14 @@ class Prisoners(QObject):
         self.history_freq = list()
         self.fitness = [0 for i in range(self.pop_size)]
 
-    def toDecimal(self, data):
-        data = [str(data[i]) for i in range(len(data))]
-        data = ''.join(data)
-        return int(data, 2)
+    @staticmethod
+    def toDecimal(data):
+        return Prisoners.to_decTuple(tuple(data))
 
+    @staticmethod
+    @functools.cache
+    def to_decTuple(d):
+        return int("".join(str(i) for i in d), 2)
     def inic_players_2pPD(self):
         self.id_P1 = 0
         self.id_P2 = 1
@@ -621,34 +658,23 @@ class Prisoners(QObject):
                 file.write('# best strategy\n')
                 file.write('# gen ' + ' '.join([str(i) for i in range(len(self.P1_strat))]) + '\n')
 
+    @functools.cache
+    def int2bin(self, num):
+        return format(num, f'0{self.log_n_players}b')
     def set_N_players_preh(self):
-        t0=time.time()
-        k = 0
-        for i in range(self.prehistory_l):
-            row = self.prehistory[k:(k + self.players)]
-            k += self.players
-            self.N_players_preh.append(row)
+        tmp_preh = list(grouper(self.prehistory, self.players, incomplete='fill', fillvalue=None))
+        coops = map(sum, tmp_preh)
+        tmp_preh = roundrobin(*tmp_preh)
+        self.N_players_preh = list(flatten( (pr, self.int2bin(cc - pr)) for pr, cc in  zip(tmp_preh, cycle(coops))  ))
 
-        coops = list(map(sum, self.N_players_preh))
-        self.N_players_preh = list(flatten(zip(roundrobin(*self.N_players_preh), repeat(""))))
-        k = 0
-        for i in range(len(self.N_players_preh)):
-            if type(self.N_players_preh[i]) == str: continue
-            coop = coops[k] - self.N_players_preh[i]
-            result = bin(coop)[2:]
-            while len(result) < math.ceil(math.log2(self.players)): result = '0' + result
-            self.N_players_preh[self.N_players_preh.index('')] = result
-            k += 1
-            if k >= len(coops): k = 0
-        print(time.time()-t0)
+    @staticmethod
+    @functools.cache
+    def bin2dec(num):
+        return int(num, 2)
+
     def set_N_players_strat_id(self):
-        i = 0
-        while i < len(self.N_players_preh):
-            row = self.N_players_preh[i:(i + (2 * self.prehistory_l))]
-            row = [row[i] if type(row[i]) == str else str(row[i]) for i in range(len(row))]
-            row = ''.join(row)
-            self.N_players_strat_id.append(int(row, 2))
-            i += 2 * self.prehistory_l
+        self.N_players_strat_id = [Prisoners.bin2dec(''.join(map(str, row))) for row in grouper(self.N_players_preh, 2 * self.prehistory_l)]
+
 
     def set_gener_history_freq(self):
         for i in range(len(self.N_players_strat_id)): self.history_id.append(self.N_players_strat_id[i])
@@ -659,7 +685,7 @@ class Prisoners(QObject):
 
     def update_gener_history_freq(self):
         for i in range(len(self.N_players_strat_id)):
-            if (self.N_players_strat_id[i] in self.history_id) == False:
+            if not (self.N_players_strat_id[i] in self.history_id):
                 self.history_id.append(self.N_players_strat_id[i])
                 self.tournaments.append(0)
         for i in range(len(self.N_players_strat_id)):
@@ -713,7 +739,7 @@ class Prisoners(QObject):
             self.SUM_with_opponents[self.id_P2] += self.payoff_P2
             self.prehistory = [self.curr_action_P1, self.curr_action_P2] + self.prehistory[:-2]
             self.P1_preh = self.prehistory[:]
-            self.P2_preh = [0 for i in range(len(self.P1_preh))]
+            self.P2_preh = [0]*len(self.P1_preh)
             j = 0
             while j < len(self.P1_preh):
                 self.P2_preh[j] = self.P1_preh[j + 1]
@@ -734,24 +760,21 @@ class Prisoners(QObject):
 
     def tournamentNPD(self):
         for k in range(self.num_of_tournaments):
-            for i in range(self.players):
-                strat_id = self.N_players_strat_id[i]
-                self.curr_action_N_players[i] = int(self.chosenStrategies[i][strat_id])
+            self.curr_action_N_players = [int(self.chosenStrategies[i][self.N_players_strat_id[i]]) for i in range(self.players)]
             coops = sum(self.curr_action_N_players)
-            self.num_of_c_neighb_N_players = [(coops - self.curr_action_N_players[i]) for i in range(self.players)]
-            self.payoff_N_players = [(2 * self.num_of_c_neighb_N_players[i]) if self.curr_action_N_players[i] == 1 else (2 * self.num_of_c_neighb_N_players[i] + 1) for i in range(self.players)]
+            self.num_of_c_neighb_N_players = [(coops - x) for x in self.curr_action_N_players]
+            self.payoff_N_players = [2*x + (0 if y == 1 else 1) for x, y in zip(self.num_of_c_neighb_N_players,self.curr_action_N_players )]
             for i in range(self.players):
                 self.SUM_with_opponents[self.id_N_players[i]] += self.payoff_N_players[i]
             self.choices_C += coops
             self.prehistory = self.curr_action_N_players + self.prehistory[:-self.players]
-            self.N_players_preh.clear()
+            # self.N_players_preh.clear()
             self.set_N_players_preh()
-            self.N_players_strat_id.clear()
+            # self.N_players_strat_id.clear()
             self.set_N_players_strat_id()
             self.update_gener_history_freq()
             if self.debug == True: self.writeData6(k + 1)
         self.tournaments_num += self.num_of_tournaments
-
 
     def duel2PD(self):
         self.duel_fulfilment = False
@@ -759,7 +782,8 @@ class Prisoners(QObject):
             self.tournament2PD()
             self.min = min(self.c_of_opponents)
             self.id = self.c_of_opponents.index(self.min)
-            if self.min == self.num_of_opponents: self.duel_fulfilment = True
+            if self.min == self.num_of_opponents:
+                self.duel_fulfilment = True
             else:
                 temp = self.c_of_opponents
                 temp1 = self.SUM_with_opponents
@@ -798,14 +822,16 @@ class Prisoners(QObject):
             self.tournamentNPD()
             self.min = min(self.c_of_opponents)
             self.id = self.c_of_opponents.index(self.min)
-            if self.min >= self.num_of_opponents: self.duel_fulfilment = True
+            if self.min >= self.num_of_opponents:
+                self.duel_fulfilment = True
             else:
                 temp = self.c_of_opponents
                 temp1 = self.SUM_with_opponents
                 temp2 = self.history_id
                 temp3 = self.tournaments
                 self.ZERO_NPD_structures()
-                with self.mem_fs.open(self.Nstrategies, 'w') as file: pass
+                with self.mem_fs.open(self.Nstrategies, 'w') as file:
+                    pass
                 self.c_of_opponents = temp
                 self.SUM_with_opponents = temp1
                 self.history_id = temp2
@@ -824,8 +850,10 @@ class Prisoners(QObject):
                         strats = self.mem_fs.open(self.strategies, 'r')
                         for line in strats:
                             if number == self.id_N_players[i]:
-                                if line.endswith('\n'): file.write(line)
-                                else: file.write(line + '\n')
+                                if line.endswith('\n'):
+                                    file.write(line)
+                                else:
+                                    file.write(line + '\n')
                                 break
                             number += 1
                         strats.close()
@@ -847,14 +875,15 @@ class Prisoners(QObject):
             for i in range(len(self.P1_strat)):
                 self.history_freq[i] = self.gener_history_freq[i] / self.SUM_gen_hist_freq
         else:
-                self.SUM_gen_hist_freq = sum(self.tournaments)
-                self.history_freq = [0 for i in range(len(self.tournaments))]
-                for i in range(len(self.history_id)):
-                    self.history_freq[i] = self.tournaments[i] / self.SUM_gen_hist_freq
+            self.SUM_gen_hist_freq = sum(self.tournaments)
+            self.history_freq = [0 for i in range(len(self.tournaments))]
+            for i in range(len(self.history_id)):
+                self.history_freq[i] = self.tournaments[i] / self.SUM_gen_hist_freq
         if self.gen == self.start:
             self.hist_freq_show_fulfilment = True
             self.start += self.delta_freq
-        else: self.hist_freq_show_fulfilment = False
+        else:
+            self.hist_freq_show_fulfilment = False
         if self.players == 2:
             with open('.\\RESULTS\\result_1.txt', 'a') as file:
                 file.write('  %d %.2f %.2f\n' % (self.gen, round(self.best_fit, 2), round(self.avg_fit, 2)))
@@ -873,7 +902,7 @@ class Prisoners(QObject):
                             break
                         number += 1
             self.signals.draw1.emit('.\\RESULTS\\result_1.txt')
-            if self.hist_freq_show_fulfilment == True:
+            if self.hist_freq_show_fulfilment:
                 path = '.\\RESULTS\\result_2_' + str(self.gen) + '.txt'
                 with open(path, 'w') as file:
                     file.write('# 2pPD\n')
@@ -890,8 +919,10 @@ class Prisoners(QObject):
                     file.write('# tournament_size = %d\n' % self.tournament_size)
                     file.write('# crossover_prob = %f\n' % self.crossover_prob)
                     file.write('# mutation_prob = %f\n' % self.mutation_prob)
-                    if self.elitist == True: file.write('# elitist_strategy = True\n')
-                    else: file.write('# elitist_strategy = False\n')
+                    if self.elitist:
+                        file.write('# elitist_strategy = True\n')
+                    else:
+                        file.write('# elitist_strategy = False\n')
                     file.write('# num_of_runs = %d\n' % self.num_of_runs)
                     file.write('# seed = %d\n' % self.seed)
                     file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
@@ -913,7 +944,7 @@ class Prisoners(QObject):
         else:
             temp = []
             temp1, temp2, temp3 = self.history_id[:], self.history_freq[:], self.history_freq[:]
-            temp3.sort(reverse = True)
+            temp3.sort(reverse=True)
             temp3 = temp3[:10]
             for i in range(len(temp3)):
                 ind = temp2.index(temp3[i])
@@ -932,7 +963,7 @@ class Prisoners(QObject):
                     file.write('%d %.2f ' % (temp[i][0], round(temp[i][1], 2)))
                 file.write('\n')
             self.signals.draw1.emit('.\\RESULTS\\result_1N.txt')
-            if self.hist_freq_show_fulfilment == True:
+            if self.hist_freq_show_fulfilment:
                 path = '.\\RESULTS\\result_2N_' + str(self.gen) + '.txt'
                 with open(path, 'w') as file:
                     file.write('# %dpPD\n' % self.players)
@@ -945,8 +976,10 @@ class Prisoners(QObject):
                     file.write('# tournament_size = %d\n' % self.tournament_size)
                     file.write('# crossover_prob = %f\n' % self.crossover_prob)
                     file.write('# mutation_prob = %f\n' % self.mutation_prob)
-                    if self.elitist == True: file.write('# elitist_strategy = True\n')
-                    else: file.write('# elitist_strategy = False\n')
+                    if self.elitist == True:
+                        file.write('# elitist_strategy = True\n')
+                    else:
+                        file.write('# elitist_strategy = False\n')
                     file.write('# num_of_runs = %d\n' % self.num_of_runs)
                     file.write('# seed = %d\n' % self.seed)
                     file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
@@ -961,13 +994,13 @@ class Prisoners(QObject):
         winner = None
         for i in range(self.tournament_size):
             ind = self.rng.randint(0, self.pop_size - 1)
-            if winner == None or self.fitness[ind] > self.fitness[winner]:
+            if winner is None or self.fitness[ind] > self.fitness[winner]:
                 winner = ind
         return winner
 
     def crossover_fun(self, strat1, strat2):
         los = self.rng.randint(1, (len(strat1) - 1))
-        return (strat1[:los] + strat2[los:], strat2[:los] + strat1[los:])
+        return strat1[:los] + strat2[los:], strat2[:los] + strat1[los:]
 
     def mutation_fun(self):
         strats = list()
@@ -977,8 +1010,10 @@ class Prisoners(QObject):
             for j in range(len(strats[i])):
                 los = self.rng.random()
                 if los < self.mutation_prob:
-                    if strats[i][j] == '0': strats[i] = strats[i][:j] + '1' + strats[i][j+1:]
-                    else: strats[i] = strats[i][:j] + '0' + strats[i][j+1:]
+                    if strats[i][j] == '0':
+                        strats[i] = strats[i][:j] + '1' + strats[i][j + 1:]
+                    else:
+                        strats[i] = strats[i][:j] + '0' + strats[i][j + 1:]
         with self.mem_fs.open(self.strategies, 'w') as file:
             for i in range(len(strats)):
                 line = ' '.join(list(strats[i])) + '\n'
@@ -988,12 +1023,13 @@ class Prisoners(QObject):
         strats = list()
         with self.mem_fs.open(self.strategies, 'r') as file:
             for line in file: strats.append(line[:-1])
-        if (best_strat in strats) == False:
+        if not (best_strat in strats):
             with self.mem_fs.open(self.strategies, 'w') as file:
                 for i in range(len(strats) - 1):
                     line = strats[i] + '\n'
                     file.write(line)
-                if best_strat.endswith('\n'): file.write(best_strat)
+                if best_strat.endswith('\n'):
+                    file.write(best_strat)
                 else:
                     line = best_strat + '\n'
                     file.write(line)
@@ -1014,14 +1050,17 @@ class Prisoners(QObject):
             # tournament selection
             for j in range(self.pop_size):
                 winner = self.tournament_fun()
-                if (winner in winners) == False: winners.append(winner)
+                if not (winner in winners):
+                    winners.append(winner)
                 with self.mem_fs.open(self.tempstrategies, 'a') as file:
                     number = 0
                     strat = self.mem_fs.open(self.strategies, 'r')
                     for line in strat:
                         if number == winner:
-                            if line.endswith('\n') == False: file.write(line + '\n')
-                            else: file.write(line)
+                            if not line.endswith('\n'):
+                                file.write(line + '\n')
+                            else:
+                                file.write(line)
                             break
                         number += 1
                     strat.close()
@@ -1044,9 +1083,12 @@ class Prisoners(QObject):
                         chosen2 = self.rng.randint(0, (len(self.parents_strategies) - 1))
                     number = 0
                     for line in file:
-                        if number == chosen: strat1 = ''.join(line.split())
-                        elif number == chosen2: strat2 = ''.join(line.split())
-                        elif number > chosen and number > chosen2: break
+                        if number == chosen:
+                            strat1 = ''.join(line.split())
+                        elif number == chosen2:
+                            strat2 = ''.join(line.split())
+                        elif number > chosen and number > chosen2:
+                            break
                         number += 1
                     (strat1, strat2) = self.crossover_fun(strat1, strat2)
                     children.write(' '.join(list(strat1)) + '\n')
@@ -1063,15 +1105,19 @@ class Prisoners(QObject):
             with self.mem_fs.open(self.strategies, 'w') as file:
                 children = self.mem_fs.open(self.childstrategies, 'r')
                 for line in children:
-                    if line.endswith('\n') == True: file.write(line)
-                    else: file.write(line + '\n')
+                    if line.endswith('\n'):
+                        file.write(line)
+                    else:
+                        file.write(line + '\n')
                 children.close()
             self.mutation_fun()
             # elitist
             if self.elitist == True: self.elitist_fun(best_strat)
             if self.debug == True: self.writeData4()
-            with self.mem_fs.open(self.tempstrategies, 'w') as file: pass
-            with self.mem_fs.open(self.childstrategies, 'w') as file: pass
+            with self.mem_fs.open(self.tempstrategies, 'w') as file:
+                pass
+            with self.mem_fs.open(self.childstrategies, 'w') as file:
+                pass
             if self.players == 2:
                 self.SUM_with_opponents = [0 for i in range(self.pop_size)]
                 self.c_of_opponents = [0 for i in range(self.pop_size)]
@@ -1090,7 +1136,8 @@ class Prisoners(QObject):
                 temp = self.c_of_opponents
                 temp1 = self.SUM_with_opponents
                 self.ZERO_NPD_structures()
-                with self.mem_fs.open(self.Nstrategies, 'w') as file: pass
+                with self.mem_fs.open(self.Nstrategies, 'w') as file:
+                    pass
                 self.c_of_opponents = temp
                 self.SUM_with_opponents = temp1
                 self.id_N_players = [-1 for i in range(self.players)]
@@ -1098,7 +1145,8 @@ class Prisoners(QObject):
                 self.c_of_opponents[self.id] += 1
                 for i in range(1, self.players):
                     id = self.rng.randint(0, self.pop_size - 1)
-                    while (id in self.id_N_players) == True: id = self.rng.randint(0, self.pop_size - 1)
+                    while id in self.id_N_players:
+                        id = self.rng.randint(0, self.pop_size - 1)
                     self.id_N_players[i] = id
                     self.c_of_opponents[id] += 1
                 number = 0
@@ -1107,8 +1155,10 @@ class Prisoners(QObject):
                     for i in range(self.players):
                         for line in strats:
                             if number == self.id_N_players[i]:
-                                if line.endswith('\n'): file.write(line)
-                                else: file.write(line + '\n')
+                                if line.endswith('\n'):
+                                    file.write(line)
+                                else:
+                                    file.write(line + '\n')
                                 strats.seek(0)
                                 number = 0
                                 break
@@ -1141,8 +1191,10 @@ class Prisoners(QObject):
                 self.gen = 0
                 self.readData()
                 self.writeData()
-                if self.players == 2: self.functions_2PD()
-                else: self.functions_NPD()
+                if self.players == 2:
+                    self.functions_2PD()
+                else:
+                    self.functions_NPD()
                 if self.players == 2 and self.pop_size == 2:
                     self.tournament2PD()
                     self.fitnessStatistics()
