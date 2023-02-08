@@ -1107,17 +1107,6 @@ class Prisoners(QObject):
                                 break
                             number += 1
                     strats.close()
-                #for i in range(self.players):
-                    #number = 0
-                    #with open(self.Nstrategies, 'a') as file:
-                        #strats = open(self.strategies, 'r')
-                        #for line in strats:
-                            #if number == self.id_N_players[i]:
-                                #if line.endswith('\n'): file.write(line)
-                                #else: file.write(line + '\n')
-                                #break
-                            #number += 1
-                        #strats.close()
                 self.prehistory = [self.rng.randint(0, 1) for i in range(self.prehistory_l * self.players)]
                 self.set_N_players_preh()
                 self.set_N_players_strat_id()
