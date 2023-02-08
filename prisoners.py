@@ -733,9 +733,8 @@ class Prisoners(QObject):
             coops = sum(self.curr_action_N_players)
             self.num_of_c_neighb_N_players = [(coops - self.curr_action_N_players[i]) for i in range(self.players)]
             self.payoff_N_players = [(2 * self.num_of_c_neighb_N_players[i]) if self.curr_action_N_players[i] == 1 else (2 * self.num_of_c_neighb_N_players[i] + 1) for i in range(self.players)]
-            population_id = [self.id_N_players[i] for i in range(self.players)]
             for i in range(self.players):
-                self.SUM_with_opponents[population_id[i]] += self.payoff_N_players[i]
+                self.SUM_with_opponents[self.id_N_players[i]] += self.payoff_N_players[i]
             self.choices_C += coops
             self.prehistory = self.curr_action_N_players + self.prehistory[:-self.players]
             self.N_players_preh.clear()
