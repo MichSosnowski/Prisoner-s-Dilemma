@@ -684,12 +684,11 @@ class Prisoners(QObject):
             self.tournaments[self.history_id.index(i)] += 1
 
     def update_gener_history_freq(self):
-        for i in range(len(self.N_players_strat_id)):
-            if not (self.N_players_strat_id[i] in self.history_id):
-                self.history_id.append(self.N_players_strat_id[i])
+        for x in self.N_players_strat_id:
+            if not (x in self.history_id):
+                self.history_id.append(x)
                 self.tournaments.append(0)
-        for i in range(len(self.N_players_strat_id)):
-            ind = self.history_id.index(self.N_players_strat_id[i])
+            ind = self.history_id.index(x)
             self.tournaments[ind] += 1
 
     def inic_players_NpPD(self):
