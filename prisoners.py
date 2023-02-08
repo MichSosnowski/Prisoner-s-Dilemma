@@ -1,12 +1,17 @@
 # This Python file uses the following encoding: utf-8
 # This file consists of code which is used to solve Prisoner's Dilemma.
 # It is used by mainwindow.py
+import copy
+import time
+from itertools import repeat
 
 from PySide6.QtCore import QObject, Slot, Signal
 from statistics import mean
 import tempfile, random, math, os, glob
 import numpy as np
 import re
+
+from more_itertools import roundrobin, flatten
 
 maxrange = 9999999999999999                     # max range of random seed
 filename = ''                                   # name of file to open
@@ -617,15 +622,15 @@ class Prisoners(QObject):
                 file.write('# gen ' + ' '.join([str(i) for i in range(len(self.P1_strat))]) + '\n')
 
     def set_N_players_preh(self):
+        t0=time.time()
         k = 0
         for i in range(self.prehistory_l):
             row = self.prehistory[k:(k + self.players)]
             k += self.players
             self.N_players_preh.append(row)
-        temp = [[self.N_players_preh[i][j] for i in range(len(self.N_players_preh))] for j in range(len(self.N_players_preh[0]))]
-        temp2 = self.N_players_preh[:]
-        self.N_players_preh = [x for i in range(len(temp)) for j in range(len(temp[0])) for x in (temp[i][j], '')]
-        coops = [sum(temp2[i]) for i in range(len(temp2))]
+
+        coops = list(map(sum, self.N_players_preh))
+        self.N_players_preh = list(flatten(zip(roundrobin(*self.N_players_preh), repeat(""))))
         k = 0
         for i in range(len(self.N_players_preh)):
             if type(self.N_players_preh[i]) == str: continue
@@ -635,7 +640,7 @@ class Prisoners(QObject):
             self.N_players_preh[self.N_players_preh.index('')] = result
             k += 1
             if k >= len(coops): k = 0
-
+        print(time.time()-t0)
     def set_N_players_strat_id(self):
         i = 0
         while i < len(self.N_players_preh):
