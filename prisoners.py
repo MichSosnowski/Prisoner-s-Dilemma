@@ -387,7 +387,7 @@ class Prisoners(QObject):
                 for i in self.strategies:
                     individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players))) + 2))[2:]
                     file.write(' '.join(individual) + '\n')
-                file.write('\n\nPrehistory_N:')
+                file.write('\nPrehistory_N:')
                 for i in range(len(self.prehistory)):
                     if i % self.players == 0: file.write('\n')
                     file.write(str(self.prehistory[i]) + ' ')
