@@ -1092,12 +1092,19 @@ class Prisoners(QObject):
                 self.createResult1()
                 self.createResult2()
                 self.createResult3()
+                self.strategies.clear()
+                self.tempstrategies.clear()
+                self.childstrategies.clear()
                 self.start = self.freq_gen_start
                 if self.exper != 1:
                     with open('.\\RESULTS_MULTIRUN\\m_result_1.txt', 'a') as file: file.write('\n')
             elif self.num_of_runs > 1 and self.players != 2:
                 self.createResult1N()
                 self.createResult2N()
+                self.strategies.clear()
+                self.tempstrategies.clear()
+                self.childstrategies.clear()
+                self.Nstrategies.clear()
                 self.start = self.freq_gen_start
             self.gen = 0
             self.readData()
