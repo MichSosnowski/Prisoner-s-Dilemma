@@ -4,7 +4,7 @@
 
 from PySide6.QtCore import QObject, Slot, Signal
 from statistics import mean
-import tempfile, random, math, os, glob
+import random, math, os, glob, time
 import numpy as np
 import re
 
@@ -42,11 +42,10 @@ class Prisoners(QObject):
         self.start = self.freq_gen_start
         self.delta_freq = data[21]
         self.debug = data[22]
-        self.directory = tempfile.TemporaryDirectory()
-        self.strategies = self.directory.name + '\\strat.txt'
-        self.tempstrategies = self.directory.name + '\\tempstrat.txt'
-        self.childstrategies = self.directory.name + '\\childstrat.txt'
-        self.Nstrategies = self.directory.name + '\\Nstrat.txt'
+        self.strategies = list()
+        self.tempstrategies = list()
+        self.childstrategies = list()
+        self.Nstrategies = list()
         directory = glob.glob('.\\RESULTS')
         directory2 = glob.glob('.\\RESULTS_MULTIRUN')
         if len(directory) == 0: os.mkdir('.\\RESULTS')
@@ -295,11 +294,11 @@ class Prisoners(QObject):
     def readData(self):
         if self.players == 2 and self.pop_size == 2:
             self.getFileName('Choose a file of strategies for 2pPD and pop_size = 2...')
-            with open(filename, 'r') as f:
-                file = open(self.strategies, 'w')
-                lines = f.readlines()[1:]
-                for line in lines: file.write(line)
-                file.close()
+            with open(filename, 'r') as file:
+                lines = file.readlines()[1:]
+                for line in lines:
+                    individual = int(''.join(line.rsplit()), 2)
+                    self.strategies.append(individual)
             self.clearFileName()
             self.getFileName('Choose a file of prehistory for 2pPD and pop_size = 2...')
             with open(filename, 'r') as f:
@@ -308,11 +307,11 @@ class Prisoners(QObject):
             self.clearFileName()
         elif self.players == 2 and self.pop_size == 3:
             self.getFileName('Choose a file of strategies for 2pPD and pop_size = 3...')
-            with open(filename, 'r') as f:
-                file = open(self.strategies, 'w')
-                lines = f.readlines()[1:]
-                for line in lines: file.write(line)
-                file.close()
+            with open(filename, 'r') as file:
+                lines = file.readlines()[1:]
+                for line in lines:
+                    individual = int(''.join(line.rsplit()), 2)
+                    self.strategies.append(individual)
             self.clearFileName()
             self.getFileName('Choose a file of prehistory for 2pPD and pop_size = 3...')
             with open(filename, 'r') as f:
@@ -321,11 +320,11 @@ class Prisoners(QObject):
             self.clearFileName()
         elif self.players == 3 and self.pop_size == 3:
             self.getFileName('Choose a file of strategies for 3pPD and pop_size = 3...')
-            with open(filename, 'r') as f:
-                file = open(self.strategies, 'w')
-                lines = f.readlines()[1:]
-                for line in lines: file.write(line)
-                file.close()
+            with open(filename, 'r') as file:
+                lines = file.readlines()[1:]
+                for line in lines:
+                    individual = int(''.join(line.rsplit()), 2)
+                    self.strategies.append(individual)
             self.clearFileName()
             self.getFileName('Choose a file of prehistory for 3pPD and pop_size = 3...')
             with open(filename, 'r') as f:
@@ -337,11 +336,11 @@ class Prisoners(QObject):
             self.clearFileName()
         elif self.players == 3 and self.pop_size == 4:
             self.getFileName('Choose a file of strategies for 3pPD and pop_size = 4...')
-            with open(filename, 'r') as f:
-                file = open(self.strategies, 'w')
-                lines = f.readlines()[1:]
-                for line in lines: file.write(line)
-                file.close()
+            with open(filename, 'r') as file:
+                lines = file.readlines()[1:]
+                for line in lines:
+                    individual = int(''.join(line.rsplit()), 2)
+                    self.strategies.append(individual)
             self.clearFileName()
             self.getFileName('Choose a file of prehistory for 3pPD and pop_size = 4...')
             with open(filename, 'r') as f:
@@ -352,22 +351,22 @@ class Prisoners(QObject):
                 self.prehistory = [int(self.prehistory[i]) for i in range(len(self.prehistory))]
             self.clearFileName()
         elif self.players == 2 and self.pop_size > 3:
-            with open(self.strategies, 'w') as file:
-                for i in range(self.pop_size):
-                    for j in range(self.players ** (2 * self.prehistory_l)):
-                        los = self.rng.random()
-                        if los < self.prob_of_init_C: file.write('1 ')
-                        else: file.write('0 ')
-                    file.write('\n')
+            for i in range(self.pop_size):
+                individual = 0
+                for j in range(self.players ** (2 * self.prehistory_l)):
+                    los = self.rng.random()
+                    if los < self.prob_of_init_C: individual = 2 * individual + 1
+                    else: individual = 2 * individual
+                self.strategies.append(individual)
             self.prehistory = [self.rng.randint(0, 1) for i in range(2 * self.prehistory_l)]
         elif self.players != 2 and self.pop_size >= 4:
-            with open(self.strategies, 'w') as file:
-                for i in range(self.pop_size):
-                    for j in range(2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))):
-                        los = self.rng.random()
-                        if los < self.prob_of_init_C: file.write('1 ')
-                        else: file.write('0 ')
-                    file.write('\n')
+            for i in range(self.pop_size):
+                individual = 0
+                for j in range(2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))):
+                    los = self.rng.random()
+                    if los < self.prob_of_init_C: individual = 2 * individual + 1
+                    else: individual = 2 * individual
+                self.strategies.append(individual)
             self.prehistory = [self.rng.randint(0, 1) for i in range(self.prehistory_l * self.players)]
 
     def writeData(self):
@@ -375,8 +374,9 @@ class Prisoners(QObject):
             with open('debug.txt', 'a') as file:
                 file.write('print_11:\n\n')
                 file.write('Strategies:\n')
-                with open(self.strategies, 'r') as file2:
-                    for line in file2: file.write(line)
+                for i in self.strategies:
+                    individual = format(i, '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]
+                    file.write(' '.join(individual) + '\n')
                 file.write('\n\nPrehistory:\n')
                 file.write(' '.join([str(self.prehistory[i]) for i in range(len(self.prehistory))]))
                 file.write('\n')
@@ -384,8 +384,9 @@ class Prisoners(QObject):
             with open('debug.txt', 'a') as file:
                 file.write('print_21:\n\n')
                 file.write('Strategies_N:\n')
-                with open(self.strategies, 'r') as file2:
-                    for line in file2: file.write(line)
+                for i in self.strategies:
+                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))) + 2)[2:]
+                    file.write(' '.join(individual) + '\n')
                 file.write('\n\nPrehistory_N:')
                 for i in range(len(self.prehistory)):
                     if i % self.players == 0: file.write('\n')
@@ -435,16 +436,31 @@ class Prisoners(QObject):
             file.write('\n\nprint_31:\n\n')
             file.write('After GA operators\n\n')
             file.write('Temp_strategies:\n')
-            with open(self.tempstrategies, 'r') as file2:
-                for line in file2: file.write(line)
+            for i in self.tempstrategies:
+                individual = 0
+                if self.players == 2:
+                    individual = format(i, '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]
+                else:
+                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))) + 2)[2:]
+                file.write(' '.join(individual) + '\n')
             file.write('\nParent_strategies:\n')
             for i in range(len(self.parents_strategies)): file.write(str(self.parents_strategies[i]) + ' ')
             file.write('\n\nChild_strategies:\n')
-            with open(self.childstrategies, 'r') as file2:
-                for line in file2: file.write(line)
+            for i in self.childstrategies:
+                individual = 0
+                if self.players == 2:
+                    individual = format(i, '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]
+                else:
+                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))) + 2)[2:]
+                file.write(' '.join(individual) + '\n')
             file.write('\n\nStrategies:\n')
-            with open(self.strategies, 'r') as file2:
-                for line in file2: file.write(line)
+            for i in self.strategies:
+                individual = 0
+                if self.players == 2:
+                    individual = format(i, '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]
+                else:
+                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))) + 2)[2:]
+                file.write(' '.join(individual) + '\n')
 
     def writeData5(self):
         with open('debug.txt', 'a') as file:
@@ -454,8 +470,13 @@ class Prisoners(QObject):
             file.write('\n\nc_of_opponents:\n')
             for i in range(len(self.c_of_opponents)): file.write(str(self.c_of_opponents[i]) + ' ')
             file.write('\n\nN_players_strategies:\n')
-            with open(self.Nstrategies, 'r') as file2:
-                for line in file2: file.write(line)
+            for i in self.Nstrategies:
+                individual = 0
+                if self.players == 2:
+                    individual = format(i, '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]
+                else:
+                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))) + 2)[2:]
+                file.write(' '.join(individual) + '\n')
             file.write('\n\nN_players_preh:\n')
             w = 0
             text = ''
@@ -525,8 +546,13 @@ class Prisoners(QObject):
             file.write('id_N_players:\n')
             for i in range(len(self.id_N_players)): file.write(str(self.id_N_players[i]) + ' ')
             file.write('\n\nN_players_strategies:\n')
-            with open(self.Nstrategies, 'r') as file2:
-                for line in file2: file.write(line)
+            for i in self.Nstrategies:
+                individual = 0
+                if self.players == 2:
+                    individual = format(i, '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]
+                else:
+                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))) + 2)[2:]
+                file.write(' '.join(individual) + '\n')
             file.write('\n\nPrehistory_N:\n')
             for i in range(len(self.prehistory)):
                 if i % self.players == 0 and i != 0: file.write('\n')
@@ -584,10 +610,8 @@ class Prisoners(QObject):
     def inic_players_2pPD(self):
         self.id_P1 = 0
         self.id_P2 = 1
-        with open(self.strategies, 'r') as file:
-            lines = file.readlines()
-            self.P1_strat.extend([int(lines[0][i]) for i in range(len(lines[0])) if lines[0][i] != ' ' and lines[0][i] != '\n'])
-            self.P2_strat.extend([int(lines[1][i]) for i in range(len(lines[1])) if lines[1][i] != ' ' and lines[1][i] != '\n'])
+        self.P1_strat.extend(list(format(self.strategies[0], '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]))
+        self.P2_strat.extend(list(format(self.strategies[1], '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]))
         self.P1_preh = self.prehistory[:]
         self.P2_preh = [0 for i in range(len(self.P1_preh))]
         i = 0
@@ -662,15 +686,7 @@ class Prisoners(QObject):
     def inic_players_NpPD(self):
         for i in range(self.players):
             self.id_N_players[i] = i
-            number = 0
-            with open(self.strategies, 'r') as file:
-                Nstrats = open(self.Nstrategies, 'a')
-                for line in file:
-                    if number == i:
-                        Nstrats.write(line)
-                        break
-                    number += 1
-                Nstrats.close()
+            self.Nstrategies.append(self.strategies[i])
             self.c_of_opponents[i] += 1
         self.set_N_players_preh()
         self.set_N_players_strat_id()
@@ -688,8 +704,8 @@ class Prisoners(QObject):
 
     def tournament2PD(self):
         for i in range(self.num_of_tournaments):
-            self.curr_action_P1 = self.P1_strat[self.strat_id_1]
-            self.curr_action_P2 = self.P2_strat[self.strat_id_2]
+            self.curr_action_P1 = int(self.P1_strat[self.strat_id_1])
+            self.curr_action_P2 = int(self.P2_strat[self.strat_id_2])
             if self.curr_action_P1 * self.curr_action_P2 == 1:
                 self.payoff_P1 = self.payments[0]
                 self.payoff_P2 = self.payments[1]
@@ -721,9 +737,9 @@ class Prisoners(QObject):
 
     def getStrategies(self):
         self.chosenStrategies = []
-        with open(self.Nstrategies, 'r') as file:
-            for line in file:
-                self.chosenStrategies.append(''.join(line.split()))
+        for i in self.Nstrategies:
+            individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players))) + 2))[2:]
+            self.chosenStrategies.append(individual)
 
     def tournamentNPD(self):
         for k in range(self.num_of_tournaments):
@@ -764,10 +780,8 @@ class Prisoners(QObject):
                 self.id_P1 = self.id
                 self.id_P2 = self.rng.randint(0, self.pop_size - 1)
                 while self.id_P2 == self.id_P1: self.id_P2 = self.rng.randint(0, self.pop_size - 1)
-                with open(self.strategies, 'r') as file:
-                    lines = file.readlines()
-                    self.P1_strat.extend([int(lines[self.id_P1][i]) for i in range(len(lines[self.id_P1])) if lines[self.id_P1][i] != ' ' and lines[self.id_P1][i] != '\n'])
-                    self.P2_strat.extend([int(lines[self.id_P2][i]) for i in range(len(lines[self.id_P2])) if lines[self.id_P2][i] != ' ' and lines[self.id_P2][i] != '\n'])
+                self.P1_strat.extend(list(format(self.strategies[self.id_P1], '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]))
+                self.P2_strat.extend(list(format(self.strategies[self.id_P2], '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]))
                 self.prehistory = [self.rng.randint(0, 1) for i in range(len(self.prehistory))]
                 self.P1_preh = self.prehistory[:]
                 i = 0
@@ -798,7 +812,7 @@ class Prisoners(QObject):
                 temp2 = self.history_id
                 temp3 = self.tournaments
                 self.ZERO_NPD_structures()
-                with open(self.Nstrategies, 'w') as file: pass
+                self.Nstrategies.clear()
                 self.c_of_opponents = temp
                 self.SUM_with_opponents = temp1
                 self.history_id = temp2
@@ -812,16 +826,7 @@ class Prisoners(QObject):
                     self.id_N_players[i] = id
                     self.c_of_opponents[id] += 1
                 for i in range(self.players):
-                    number = 0
-                    with open(self.Nstrategies, 'a') as file:
-                        strats = open(self.strategies, 'r')
-                        for line in strats:
-                            if number == self.id_N_players[i]:
-                                if line.endswith('\n'): file.write(line)
-                                else: file.write(line + '\n')
-                                break
-                            number += 1
-                        strats.close()
+                    self.Nstrategies.append(self.strategies[self.id_N_players[i]])
                 self.prehistory = [self.rng.randint(0, 1) for i in range(self.prehistory_l * self.players)]
                 self.set_N_players_preh()
                 self.set_N_players_strat_id()
@@ -856,16 +861,10 @@ class Prisoners(QObject):
                 file.write(' '.join([str(round(self.history_freq[i], 2)) for i in range(len(self.history_freq))]) + '\n')
             with open('.\\RESULTS\\result_3.txt', 'a') as file:
                 file.write('  %d ' % self.gen)
-                with open(self.strategies, 'r') as file2:
-                    number = 0
-                    for line in file2:
-                        if number == self.fitness.index(self.best_fit):
-                            line = ' '.join(line.split(' '))
-                            file.write(line)
-                            if line.endswith('\n') == False: file.write('\n')
-                            break
-                        number += 1
+                individual = ' '.join(list(format(self.strategies[self.fitness.index(self.best_fit)], '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]))
+                file.write(individual + '\n')
             self.signals.draw1.emit('.\\RESULTS\\result_1.txt')
+            time.sleep(0.5)
             if self.hist_freq_show_fulfilment == True:
                 path = '.\\RESULTS\\result_2_' + str(self.gen) + '.txt'
                 with open(path, 'w') as file:
@@ -895,6 +894,7 @@ class Prisoners(QObject):
                     for i in range(len(freqs)):
                         file.write('  %d %.2f\n' % (i, round(freqs[i], 2)))
                 self.signals.draw2.emit(path, self.gen)
+                time.sleep(0.5)
             if self.num_of_runs > 1:
                 with open('.\\RESULTS_MULTIRUN\\m_result_1.txt', 'a') as file:
                     if self.gen == 0:
@@ -925,6 +925,7 @@ class Prisoners(QObject):
                     file.write('%d %.2f ' % (temp[i][0], round(temp[i][1], 2)))
                 file.write('\n')
             self.signals.draw1.emit('.\\RESULTS\\result_1N.txt')
+            time.sleep(0.5)
             if self.hist_freq_show_fulfilment == True:
                 path = '.\\RESULTS\\result_2N_' + str(self.gen) + '.txt'
                 with open(path, 'w') as file:
@@ -949,6 +950,7 @@ class Prisoners(QObject):
                     for i in range(len(temp)):
                         file.write('  %d %.2f\n' % (temp[i][0], round(temp[i][1], 2)))
                 self.signals.draw2.emit(path, self.gen)
+                time.sleep(0.5)
 
     def tournament_fun(self):
         winner = None
@@ -964,60 +966,45 @@ class Prisoners(QObject):
 
     def mutation_fun(self):
         strats = list()
-        with open(self.strategies, 'r') as file:
-            for line in file: strats.append(''.join(line.split()))
+        for i in self.strategies:
+            individual = 0
+            if self.players == 2:
+                individual = format(i, '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]
+            else:
+                individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players))) + 2))[2:]
+            strats.append(individual)
         for i in range(len(strats)):
             for j in range(len(strats[i])):
                 los = self.rng.random()
                 if los < self.mutation_prob:
                     if strats[i][j] == '0': strats[i] = strats[i][:j] + '1' + strats[i][j+1:]
                     else: strats[i] = strats[i][:j] + '0' + strats[i][j+1:]
-        with open(self.strategies, 'w') as file:
-            for i in range(len(strats)):
-                line = ' '.join(list(strats[i])) + '\n'
-                file.write(line)
+        self.strategies.clear()
+        for i in strats:
+            self.strategies.append(int(i, 2))
 
     def elitist_fun(self, best_strat):
         strats = list()
-        with open(self.strategies, 'r') as file:
-            for line in file: strats.append(line[:-1])
+        for i in self.strategies:
+            strats.append(i)
         if (best_strat in strats) == False:
-            with open(self.strategies, 'w') as file:
-                for i in range(len(strats) - 1):
-                    line = strats[i] + '\n'
-                    file.write(line)
-                if best_strat.endswith('\n'): file.write(best_strat)
-                else:
-                    line = best_strat + '\n'
-                    file.write(line)
+            self.strategies.clear()
+            for i in strats:
+                self.strategies.append(i)
+            self.strategies.pop()
+            self.strategies.append(best_strat)
 
     def GAoperators(self):
         for i in range(self.num_of_generations):
             self.gen = i + 1
             winners = []
-            best_strat = ''
-            number = 0
-            with open(self.strategies, 'r') as file:
-                best = self.fitness.index(max(self.fitness))
-                for line in file:
-                    if number == best:
-                        best_strat = line
-                        break
-                    number += 1
+            best = self.fitness.index(max(self.fitness))
+            best_strat = self.strategies[best]
             # tournament selection
             for j in range(self.pop_size):
                 winner = self.tournament_fun()
                 if (winner in winners) == False: winners.append(winner)
-                with open(self.tempstrategies, 'a') as file:
-                    number = 0
-                    strat = open(self.strategies, 'r')
-                    for line in strat:
-                        if number == winner:
-                            if line.endswith('\n') == False: file.write(line + '\n')
-                            else: file.write(line)
-                            break
-                        number += 1
-                    strat.close()
+                self.tempstrategies.append(self.strategies[winner])
             # crossover
             self.parents_strategies = [0 for i in range(self.pop_size)]
             for j in range(len(self.parents_strategies)):
@@ -1028,43 +1015,36 @@ class Prisoners(QObject):
             strat2 = ''
             new_pop_size = 0
             while new_pop_size != self.pop_size:
-                with open(self.strategies, 'r') as file:
-                    children = open(self.childstrategies, 'a')
+                chosen = self.rng.randint(0, (len(self.parents_strategies) - 1))
+                while self.parents_strategies[chosen] != 1:
                     chosen = self.rng.randint(0, (len(self.parents_strategies) - 1))
-                    while self.parents_strategies[chosen] != 1: chosen = self.rng.randint(0, (len(self.parents_strategies) - 1))
+                chosen2 = self.rng.randint(0, (len(self.parents_strategies) - 1))
+                while self.parents_strategies[chosen2] != 1 or chosen2 == chosen:
                     chosen2 = self.rng.randint(0, (len(self.parents_strategies) - 1))
-                    while self.parents_strategies[chosen2] != 1 or chosen2 == chosen:
-                        chosen2 = self.rng.randint(0, (len(self.parents_strategies) - 1))
-                    number = 0
-                    for line in file:
-                        if number == chosen: strat1 = ''.join(line.split())
-                        elif number == chosen2: strat2 = ''.join(line.split())
-                        elif number > chosen and number > chosen2: break
-                        number += 1
-                    (strat1, strat2) = self.crossover_fun(strat1, strat2)
-                    children.write(' '.join(list(strat1)) + '\n')
-                    children.write(' '.join(list(strat2)) + '\n')
-                    new_pop_size += 2
-                    if new_pop_size == (self.pop_size - 1):
+                if self.players == 2:
+                    strat1 = format(self.strategies[chosen], '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]
+                    strat2 = format(self.strategies[chosen2], '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]
+                else:
+                    strat1 = format(self.strategies[chosen], '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players))) + 2))[2:]
+                    strat2 = format(self.strategies[chosen2], '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players))) + 2))[2:]
+                (strat1, strat2) = self.crossover_fun(strat1, strat2)
+                self.childstrategies.append(int(strat1, 2))
+                self.childstrategies.append(int(strat2, 2))
+                new_pop_size += 2
+                if new_pop_size == (self.pop_size - 1):
+                    chosen = self.rng.randint(0, (len(self.parents_strategies) - 1))
+                    while self.parents_strategies[chosen] != 1:
                         chosen = self.rng.randint(0, (len(self.parents_strategies) - 1))
-                        while self.parents_strategies[chosen] != 1: chosen = self.rng.randint(0, (len(self.parents_strategies) - 1))
-                        file.seek(0)
-                        children.write(file.readlines()[chosen])
-                        new_pop_size += 1
-                    children.close()
+                    self.childstrategies.append(self.strategies[chosen])
+                    new_pop_size += 1
             # mutation
-            with open(self.strategies, 'w') as file:
-                children = open(self.childstrategies, 'r')
-                for line in children:
-                    if line.endswith('\n') == True: file.write(line)
-                    else: file.write(line + '\n')
-                children.close()
+            self.strategies = self.childstrategies[:]
             self.mutation_fun()
             # elitist
             if self.elitist == True: self.elitist_fun(best_strat)
             if self.debug == True: self.writeData4()
-            with open(self.tempstrategies, 'w') as file: pass
-            with open(self.childstrategies, 'w') as file: pass
+            self.tempstrategies.clear()
+            self.childstrategies.clear()
             if self.players == 2:
                 self.SUM_with_opponents = [0 for i in range(self.pop_size)]
                 self.c_of_opponents = [0 for i in range(self.pop_size)]
@@ -1083,7 +1063,7 @@ class Prisoners(QObject):
                 temp = self.c_of_opponents
                 temp1 = self.SUM_with_opponents
                 self.ZERO_NPD_structures()
-                with open(self.Nstrategies, 'w') as file: pass
+                self.Nstrategies.clear()
                 self.c_of_opponents = temp
                 self.SUM_with_opponents = temp1
                 self.id_N_players = [-1 for i in range(self.players)]
@@ -1094,19 +1074,8 @@ class Prisoners(QObject):
                     while (id in self.id_N_players) == True: id = self.rng.randint(0, self.pop_size - 1)
                     self.id_N_players[i] = id
                     self.c_of_opponents[id] += 1
-                number = 0
-                with open(self.Nstrategies, 'a') as file:
-                    strats = open(self.strategies, 'r')
-                    for i in range(self.players):
-                        for line in strats:
-                            if number == self.id_N_players[i]:
-                                if line.endswith('\n'): file.write(line)
-                                else: file.write(line + '\n')
-                                strats.seek(0)
-                                number = 0
-                                break
-                            number += 1
-                    strats.close()
+                for i in range(self.players):
+                    self.Nstrategies.append(self.strategies[self.id_N_players[i]])
                 self.prehistory = [self.rng.randint(0, 1) for i in range(self.prehistory_l * self.players)]
                 self.set_N_players_preh()
                 self.set_N_players_strat_id()
