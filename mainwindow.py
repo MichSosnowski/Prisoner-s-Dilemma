@@ -128,7 +128,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.plots.xaxis.set_visible(True)
         self.plots.yaxis.set_visible(True)
         self.plots.set_xlabel('generations')
-        self.plots.legend(fontsize = 8)
+        self.plots.legend(fontsize=8)
         self.wykres.draw()
 
     def drawScreen2(self, path, gen):
@@ -166,7 +166,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.plots2.xaxis.set_visible(True)
         self.plots2.yaxis.set_visible(True)
         self.plots2.set_xlabel('strategies')
-        self.plots2.legend(fontsize = 8)
+        self.plots2.legend(ncol=3, fontsize=8)
         self.wykres2.draw()
 
     def clearScreens(self):
