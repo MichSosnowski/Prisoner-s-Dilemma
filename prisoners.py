@@ -551,7 +551,7 @@ class Prisoners(QObject):
                 if self.players == 2:
                     individual = format(i, '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]
                 else:
-                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))) + 2)[2:]
+                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players))) + 2))[2:]
                 file.write(' '.join(individual) + '\n')
             file.write('\n\nPrehistory_N:\n')
             for i in range(len(self.prehistory)):
