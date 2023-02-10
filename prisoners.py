@@ -293,40 +293,40 @@ class Prisoners(QObject):
 
     def readData(self):
         if self.players == 2 and self.pop_size == 2:
-            self.getFileName('Choose a file of strategies for 2pPD and pop_size = 2...')
+            self.getFileName('Choose a file of strategies for 2pPD, pop_size = 2 and l = %d...' % self.prehistory_l)
             with open(filename, 'r') as file:
                 lines = file.readlines()[1:]
                 for line in lines:
                     individual = int(''.join(line.rsplit()), 2)
                     self.strategies.append(individual)
             self.clearFileName()
-            self.getFileName('Choose a file of prehistory for 2pPD and pop_size = 2...')
+            self.getFileName('Choose a file of prehistory for 2pPD, pop_size = 2 and l = %d...' % self.prehistory_l)
             with open(filename, 'r') as f:
                 self.prehistory = f.readlines()[1].split()
                 self.prehistory = [int(self.prehistory[i]) for i in range(len(self.prehistory))]
             self.clearFileName()
         elif self.players == 2 and self.pop_size == 3:
-            self.getFileName('Choose a file of strategies for 2pPD and pop_size = 3...')
+            self.getFileName('Choose a file of strategies for 2pPD, pop_size = 3 and l = %d...' % self.prehistory_l)
             with open(filename, 'r') as file:
                 lines = file.readlines()[1:]
                 for line in lines:
                     individual = int(''.join(line.rsplit()), 2)
                     self.strategies.append(individual)
             self.clearFileName()
-            self.getFileName('Choose a file of prehistory for 2pPD and pop_size = 3...')
+            self.getFileName('Choose a file of prehistory for 2pPD, pop_size = 3 and l = %d...' % self.prehistory_l)
             with open(filename, 'r') as f:
                 self.prehistory = f.readlines()[1].split()
                 self.prehistory = [int(self.prehistory[i]) for i in range(len(self.prehistory))]
             self.clearFileName()
         elif self.players == 3 and self.pop_size == 3:
-            self.getFileName('Choose a file of strategies for 3pPD and pop_size = 3...')
+            self.getFileName('Choose a file of strategies for 3pPD, pop_size = 3 and l = %d...' % self.prehistory_l)
             with open(filename, 'r') as file:
                 lines = file.readlines()[1:]
                 for line in lines:
                     individual = int(''.join(line.rsplit()), 2)
                     self.strategies.append(individual)
             self.clearFileName()
-            self.getFileName('Choose a file of prehistory for 3pPD and pop_size = 3...')
+            self.getFileName('Choose a file of prehistory for 3pPD, pop_size = 3 and l = %d...' % self.prehistory_l)
             with open(filename, 'r') as f:
                 lines = f.readlines()[1:]
                 self.prehistory = list()
@@ -335,14 +335,14 @@ class Prisoners(QObject):
                 self.prehistory = [int(self.prehistory[i]) for i in range(len(self.prehistory))]
             self.clearFileName()
         elif self.players == 3 and self.pop_size == 4:
-            self.getFileName('Choose a file of strategies for 3pPD and pop_size = 4...')
+            self.getFileName('Choose a file of strategies for 3pPD, pop_size = 4 and l = %d...' % self.prehistory_l)
             with open(filename, 'r') as file:
                 lines = file.readlines()[1:]
                 for line in lines:
                     individual = int(''.join(line.rsplit()), 2)
                     self.strategies.append(individual)
             self.clearFileName()
-            self.getFileName('Choose a file of prehistory for 3pPD and pop_size = 4...')
+            self.getFileName('Choose a file of prehistory for 3pPD, pop_size = 4 and l = %d...' % self.prehistory_l)
             with open(filename, 'r') as f:
                 lines = f.readlines()[1:]
                 self.prehistory = list()
@@ -377,7 +377,7 @@ class Prisoners(QObject):
                 for i in self.strategies:
                     individual = format(i, '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]
                     file.write(' '.join(individual) + '\n')
-                file.write('\n\nPrehistory:\n')
+                file.write('\nPrehistory:\n')
                 file.write(' '.join([str(self.prehistory[i]) for i in range(len(self.prehistory))]))
                 file.write('\n')
         if self.debug == True and self.players != 2 and self.pop_size < 5:
@@ -385,7 +385,7 @@ class Prisoners(QObject):
                 file.write('print_21:\n\n')
                 file.write('Strategies_N:\n')
                 for i in self.strategies:
-                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))) + 2)[2:]
+                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players))) + 2))[2:]
                     file.write(' '.join(individual) + '\n')
                 file.write('\n\nPrehistory_N:')
                 for i in range(len(self.prehistory)):
@@ -441,7 +441,7 @@ class Prisoners(QObject):
                 if self.players == 2:
                     individual = format(i, '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]
                 else:
-                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))) + 2)[2:]
+                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players))) + 2))[2:]
                 file.write(' '.join(individual) + '\n')
             file.write('\nParent_strategies:\n')
             for i in range(len(self.parents_strategies)): file.write(str(self.parents_strategies[i]) + ' ')
@@ -451,7 +451,7 @@ class Prisoners(QObject):
                 if self.players == 2:
                     individual = format(i, '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]
                 else:
-                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))) + 2)[2:]
+                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players))) + 2))[2:]
                 file.write(' '.join(individual) + '\n')
             file.write('\n\nStrategies:\n')
             for i in self.strategies:
@@ -459,7 +459,7 @@ class Prisoners(QObject):
                 if self.players == 2:
                     individual = format(i, '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]
                 else:
-                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))) + 2)[2:]
+                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players))) + 2))[2:]
                 file.write(' '.join(individual) + '\n')
 
     def writeData5(self):
@@ -475,7 +475,7 @@ class Prisoners(QObject):
                 if self.players == 2:
                     individual = format(i, '#0%db' % (self.players ** (2 * self.prehistory_l) + 2))[2:]
                 else:
-                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players)))) + 2)[2:]
+                    individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players))) + 2))[2:]
                 file.write(' '.join(individual) + '\n')
             file.write('\n\nN_players_preh:\n')
             w = 0
