@@ -1176,4 +1176,7 @@ class Prisoners(QObject):
                     file.write('  %d %.2f %.2f\n' % (self.gen, round(mean(self.bests[self.gen]), 2), round(np.std(self.bests[self.gen]), 2)))
                 self.gen += 1
         self.createGnuplotScripts()
+        if self.num_of_runs > 1:
+            files = glob.glob('.\\RESULTS\\*')
+            for file in files: os.remove(file)
         self.signals.end.emit()
