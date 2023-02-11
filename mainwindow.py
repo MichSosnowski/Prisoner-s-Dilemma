@@ -3,7 +3,7 @@
 # It is responsible for GUI.
 
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout, QFileDialog
+from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout, QFileDialog, QMessageBox
 from PySide6.QtGui import QIntValidator, QDoubleValidator
 from PySide6.QtCore import QThread
 import matplotlib, numpy, math
@@ -35,6 +35,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__()
         self.setupUi(self)
         self.load_ui()
+        self.thread = None
 
     def load_ui(self):
         self.setWindowTitle(windowTitle)
@@ -183,6 +184,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.plots2.set_title(titlePlot2, fontsize=fontSize)
         self.wykres2.draw()
 
+    def showFinishDialog(self):
+        QApplication.beep()
+        QMessageBox.information(self, 'Done!', 'Program finished calculating.\nAll data was saved.')
+        self.thread = None
+
     def start(self):
         self.pushButton.setEnabled(False)
         self.clearScreens()
@@ -208,10 +214,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.dilemma.signals.end.connect(lambda: self.thread.quit())
         self.dilemma.signals.end.connect(lambda: self.dilemma.deleteLater())
         self.dilemma.signals.end.connect(lambda: self.thread.deleteLater())
+        self.dilemma.signals.end.connect(lambda: self.showFinishDialog())
         self.thread = QThread(parent = self)
         self.dilemma.moveToThread(self.thread)
         self.thread.started.connect(self.dilemma.launch)
         self.thread.start()
+
+    def closeEvent(self, event):
+        if self.thread != None and self.thread.isRunning() == True:
+            QApplication.beep()
+            button = QMessageBox.warning(self, 'Program is still running...', 'Do you really want to quit?\nAll unsaved data will be lost.', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Cancel)
+            if button == QMessageBox.StandardButton.Ok:
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.accept()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
