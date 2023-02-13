@@ -186,6 +186,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def showFinishDialog(self):
         QApplication.beep()
+        QApplication.alert(self, 0)
         QMessageBox.information(self, 'Done!', 'Program finished calculating.\nAll data was saved.')
         self.thread = None
 
