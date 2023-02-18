@@ -543,8 +543,10 @@ class Prisoners(QObject):
             for i in range(self.players): file.write(str(self.num_of_c_neighb_N_players[i]) + ' ')
             file.write('\npayoff_N_players:\n')
             for i in range(self.players): file.write(str(self.payoff_N_players[i]) + ' ')
+            file.write('\nSUM_payoff_N_players:\n')
+            for i in self.SUM_payoff_N_players: file.write(str(i) + ' ')
             file.write('\nSUM_with_opponents:\n')
-            for i in range(self.players): file.write(str(self.SUM_with_opponents[i]) + ' ')
+            for i in range(self.pop_size): file.write(str(self.SUM_with_opponents[i]) + ' ')
             file.write('\nPrehistory_N:\n')
             for i in range(len(self.prehistory)):
                 if i % self.players == 0 and i != 0: file.write('\n')
@@ -586,6 +588,8 @@ class Prisoners(QObject):
                 else:
                     individual = format(i, '#0%db' % (2 ** (self.prehistory_l + self.prehistory_l * math.ceil(math.log2(self.players))) + 2))[2:]
                 file.write(' '.join(individual) + '\n')
+            file.write('\n\nc_of_opponents:\n')
+            for i in range(len(self.c_of_opponents)): file.write(str(self.c_of_opponents[i]) + ' ')
             file.write('\n\nPrehistory_N:\n')
             for i in range(len(self.prehistory)):
                 if i % self.players == 0 and i != 0: file.write('\n')
@@ -627,6 +631,7 @@ class Prisoners(QObject):
         self.curr_action_N_players = [0 for i in range(self.players)]
         self.num_of_c_neighb_N_players = [0 for i in range(self.players)]
         self.payoff_N_players = [0 for i in range(self.players)]
+        self.SUM_payoff_N_players = [0 for i in range(self.players)]
         self.N_players_strat_id = list()
         self.SUM_with_opponents = [0 for i in range(self.pop_size)]
         self.c_of_opponents = [0 for i in range(self.pop_size)]
@@ -784,6 +789,7 @@ class Prisoners(QObject):
             self.payoff_N_players = [(2 * self.num_of_c_neighb_N_players[i]) if self.curr_action_N_players[i] == 1 else (2 * self.num_of_c_neighb_N_players[i] + 1) for i in range(self.players)]
             for i in range(self.players):
                 self.SUM_with_opponents[self.id_N_players[i]] += self.payoff_N_players[i]
+                self.SUM_payoff_N_players[i] += self.payoff_N_players[i]
             self.choices_C += coops
             self.prehistory = self.curr_action_N_players + self.prehistory[:-self.players]
             self.N_players_preh.clear()
@@ -844,12 +850,14 @@ class Prisoners(QObject):
                 temp1 = self.SUM_with_opponents
                 temp2 = self.history_id
                 temp3 = self.tournaments
+                temp4 = self.SUM_payoff_N_players
                 self.ZERO_NPD_structures()
                 self.Nstrategies.clear()
                 self.c_of_opponents = temp
                 self.SUM_with_opponents = temp1
                 self.history_id = temp2
                 self.tournaments = temp3
+                self.SUM_payoff_N_players = temp4
                 self.id_N_players = [-1 for i in range(self.players)]
                 self.id_N_players[0] = self.id
                 self.c_of_opponents[self.id] += 1
@@ -1102,10 +1110,12 @@ class Prisoners(QObject):
                 self.history_freq = list()
                 temp = self.c_of_opponents
                 temp1 = self.SUM_with_opponents
+                temp2 = self.SUM_payoff_N_players
                 self.ZERO_NPD_structures()
                 self.Nstrategies.clear()
                 self.c_of_opponents = temp
                 self.SUM_with_opponents = temp1
+                self.SUM_payoff_N_players = temp2
                 self.id_N_players = [-1 for i in range(self.players)]
                 self.id_N_players[0] = self.id
                 self.c_of_opponents[self.id] += 1
