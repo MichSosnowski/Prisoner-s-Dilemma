@@ -72,11 +72,13 @@ class Prisoners(QObject):
             self.tournaments_num = 0
             self.createResult1N()
             self.createResult2N()
+            self.createResult1a()
         elif self.num_of_runs > 1 and self.players != 2:
             self.choices_C = 0
             self.tournaments_num = 0
             self.createResult1N()
             self.createResult2N()
+            self.createResult1a()
             self.createMResult3()
 
     def createResult1(self):
@@ -101,7 +103,7 @@ class Prisoners(QObject):
             file.write('# seed = %d\n' % self.seed)
             file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
             file.write('# delta_freq = %d\n' % self.delta_freq)
-            file.write('#  1 2 3\n')
+            file.write('# 1 2 3\n')
             file.write('# gen best_fit avg_fit\n')
 
     def createResult2(self):
@@ -168,7 +170,7 @@ class Prisoners(QObject):
             file.write('# seed = %d\n' % self.seed)
             file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
             file.write('# delta_freq = %d\n' % self.delta_freq)
-            file.write('#  1 2 3\n')
+            file.write('# 1 2 3 4 5\n')
             file.write('# gen best_fit avg_fit avg_N_of_C %_avg_C\n')
 
     def createResult2N(self):
@@ -192,6 +194,27 @@ class Prisoners(QObject):
             file.write('# 10 best frequencies\n')
             file.write('# 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21\n')
             file.write('# gen ' + 20 * 'history_id freq ' + '\n')
+
+    def createResult1a(self):
+        with open('.\\RESULTS\\result_1a.txt', 'w') as file:
+            file.write('# %dpPD\n' % self.players)
+            file.write('# prob_of_init_C = %f\n' % self.prob_of_init_C)
+            file.write('# num_of_tournaments = %d\n' % self.num_of_tournaments)
+            file.write('# num_of_opponents = %d\n' % self.num_of_opponents)
+            file.write('# prehistory l = %d\n' % self.prehistory_l)
+            file.write('# pop_size = %d\n' % self.pop_size)
+            file.write('# num_of_generations = %d\n' % self.num_of_generations)
+            file.write('# tournament_size = %d\n' % self.tournament_size)
+            file.write('# crossover_prob = %f\n' % self.crossover_prob)
+            file.write('# mutation_prob = %f\n' % self.mutation_prob)
+            if self.elitist == True: file.write('# elitist_strategy = True\n')
+            else: file.write('# elitist_strategy = False\n')
+            file.write('# num_of_runs = %d\n' % self.num_of_runs)
+            file.write('# seed = %d\n' % self.seed)
+            file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
+            file.write('# delta_freq = %d\n' % self.delta_freq)
+            file.write('# 1 2\n')
+            file.write('# gen avg_N_payoff\n')
 
     def createMResult1(self):
         with open('.\\RESULTS_MULTIRUN\\m_result_1.txt', 'w') as file:
@@ -284,6 +307,11 @@ class Prisoners(QObject):
                 file.write('set title "average total payoff (ATP)"\n')
                 file.write("plot 'result_1N.txt' using 1:2 with lines lt 4 lw 3 title \"best fit\",\\\n")
                 file.write("'result_1N.txt' using 1:3 with lines lt 3 lw 3 title \"avg fit\"")
+        if '.\\RESULTS\\result_1a.txt' in files:
+            with open('.\\RESULTS\\result_1a.plt', 'w') as file:
+                file.write('set xlabel \"gen\"\n')
+                file.write('set title "average N payoff"\n')
+                file.write("plot 'result_1a.txt' using 1:2 with lines lt 4 lw 3 title \"avg N payoff\"")
         a = re.compile('.*_2N_.*txt')
         files2 = list(filter(a.match, files))
         if len(files2) != 0:
@@ -960,6 +988,8 @@ class Prisoners(QObject):
                 file.write('  %d %.2f %.2f %.2f %.2f\n' % (self.gen, round(self.best_fit, 2), round(self.avg_fit, 2), round(choices, 2), round((choices / self.players), 2)))
             self.choices_C = 0
             self.tournaments_num = 0
+            with open('.\\RESULTS\\result_1a.txt', 'a') as file:
+                file.write('  %d %.2f\n' % (self.gen, round(np.mean(self.SUM_payoff_N_players), 2)))
             with open('.\\RESULTS\\result_2N.txt', 'a') as file:
                 file.write('  %d ' % self.gen)
                 for i in range(len(temp)):
@@ -1102,20 +1132,12 @@ class Prisoners(QObject):
                 self.c_of_opponents[self.id_P2] += 1
                 self.duel2PD()
             elif self.players != 2:
-                self.SUM_with_opponents = [0 for i in range(self.pop_size)]
-                self.c_of_opponents = [0 for i in range(self.pop_size)]
                 self.history_id = list()
                 self.tournaments = list()
                 self.set_gener_history_freq()
                 self.history_freq = list()
-                temp = self.c_of_opponents
-                temp1 = self.SUM_with_opponents
-                temp2 = self.SUM_payoff_N_players
                 self.ZERO_NPD_structures()
                 self.Nstrategies.clear()
-                self.c_of_opponents = temp
-                self.SUM_with_opponents = temp1
-                self.SUM_payoff_N_players = temp2
                 self.id_N_players = [-1 for i in range(self.players)]
                 self.id_N_players[0] = self.id
                 self.c_of_opponents[self.id] += 1
