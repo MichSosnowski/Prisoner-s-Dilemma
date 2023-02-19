@@ -989,7 +989,8 @@ class Prisoners(QObject):
             self.choices_C = 0
             self.tournaments_num = 0
             with open('.\\RESULTS\\result_1a.txt', 'a') as file:
-                file.write('  %d %.2f\n' % (self.gen, round(np.mean(self.SUM_payoff_N_players), 2)))
+                average = np.sum(self.SUM_payoff_N_players) / (np.max(self.c_of_opponents) * self.num_of_tournaments * self.players)
+                file.write('  %d %.2f\n' % (self.gen, round(average, 2)))
             with open('.\\RESULTS\\result_2N.txt', 'a') as file:
                 file.write('  %d ' % self.gen)
                 for i in range(len(temp)):
