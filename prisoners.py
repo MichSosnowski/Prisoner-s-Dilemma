@@ -1062,7 +1062,7 @@ class Prisoners(QObject):
                 with open('.\\RESULTS_MULTIRUN\\m_result_1a.txt', 'a') as file:
                     if self.gen == 0:
                         file.write('# Exper %d\n' % self.exper)
-                        file.write('# 1 2 3\n')
+                        file.write('# 1 2\n')
                         file.write('# gen avg_N_payoff\n')
                     file.write('  %d %.2f\n' % (self.gen, round(average, 2)))
 
