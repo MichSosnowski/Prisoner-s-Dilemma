@@ -82,6 +82,7 @@ class Prisoners(QObject):
             self.createResult2N()
             self.createResult1a()
             self.createMResult3()
+            self.createMResult1a()
 
     def createResult1(self):
         with open('.\\RESULTS\\result_1.txt', 'w') as file:
@@ -284,6 +285,25 @@ class Prisoners(QObject):
             file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
             file.write('# delta_freq = %d\n' % self.delta_freq)
 
+    def createMResult1a(self):
+        with open('.\\RESULTS_MULTIRUN\\m_result_1a.txt', 'w') as file:
+            file.write('# %dpPD\n' % self.players)
+            file.write('# prob_of_init_C = %f\n' % self.prob_of_init_C)
+            file.write('# num_of_tournaments = %d\n' % self.num_of_tournaments)
+            file.write('# num_of_opponents = %d\n' % self.num_of_opponents)
+            file.write('# prehistory l = %d\n' % self.prehistory_l)
+            file.write('# pop_size = %d\n' % self.pop_size)
+            file.write('# num_of_generations = %d\n' % self.num_of_generations)
+            file.write('# tournament_size = %d\n' % self.tournament_size)
+            file.write('# crossover_prob = %f\n' % self.crossover_prob)
+            file.write('# mutation_prob = %f\n' % self.mutation_prob)
+            if self.elitist == True: file.write('# elitist_strategy = True\n')
+            else: file.write('# elitist_strategy = False\n')
+            file.write('# num_of_runs = %d\n' % self.num_of_runs)
+            file.write('# seed = %d\n' % self.seed)
+            file.write('# freq_gen_start = %d\n' % self.freq_gen_start)
+            file.write('# delta_freq = %d\n' % self.delta_freq)
+
     def createGnuplotScripts(self):
         files = glob.glob('.\\RESULTS\\*') + glob.glob('.\\RESULTS_MULTIRUN\\*')
         if '.\\RESULTS\\result_1.txt' in files:
@@ -343,6 +363,11 @@ class Prisoners(QObject):
                 file.write('set title "average total payoff (ATP)"\n')
                 file.write("plot 'm_result_N.txt' using 1:2 with lines lt 4 lw 3 title \"best fit\",\\\n")
                 file.write("'m_result_N.txt' using 1:3 with lines lt 3 lw 3 title \"avg fit\"")
+        if '.\\RESULTS_MULTIRUN\\m_result_1a.txt' in files:
+            with open('.\\RESULTS_MULTIRUN\\m_result_1a.plt', 'w') as file:
+                file.write('set xlabel \"gen\"\n')
+                file.write('set title "average N payoff"\n')
+                file.write("plot 'm_result_1a.txt' using 1:2 with lines lt 4 lw 3 title \"avg N payoff\"")
 
     def clearFileName(self):
         global filename
@@ -991,8 +1016,8 @@ class Prisoners(QObject):
                 file.write('  %d %.2f %.2f %.2f %.2f\n' % (self.gen, round(self.best_fit, 2), round(self.avg_fit, 2), round(choices, 2), round((choices / self.players), 2)))
             self.choices_C = 0
             self.tournaments_num = 0
+            average = np.sum(self.SUM_payoff_N_players) / (self.rounds_num * self.num_of_tournaments * self.players)
             with open('.\\RESULTS\\result_1a.txt', 'a') as file:
-                average = np.sum(self.SUM_payoff_N_players) / (self.rounds_num * self.num_of_tournaments * self.players)
                 file.write('  %d %.2f\n' % (self.gen, round(average, 2)))
             self.rounds_num = 0
             with open('.\\RESULTS\\result_2N.txt', 'a') as file:
@@ -1034,6 +1059,12 @@ class Prisoners(QObject):
                         file.write('# 1 2 3\n')
                         file.write('# gen best_fit avg_fit\n')
                     file.write('  %d %.2f %.2f\n' % (self.gen, self.best_fit, self.avg_fit))
+                with open('.\\RESULTS_MULTIRUN\\m_result_1a.txt', 'a') as file:
+                    if self.gen == 0:
+                        file.write('# Exper %d\n' % self.exper)
+                        file.write('# 1 2 3\n')
+                        file.write('# gen avg_N_payoff\n')
+                    file.write('  %d %.2f\n' % (self.gen, round(average, 2)))
 
     def tournament_fun(self):
         winner = None
@@ -1186,6 +1217,7 @@ class Prisoners(QObject):
                 self.start = self.freq_gen_start
                 if self.exper != 1:
                     with open('.\\RESULTS_MULTIRUN\\m_result_N.txt', 'a') as file: file.write('\n')
+                    with open('.\\RESULTS_MULTIRUN\\m_result_1a.txt', 'a') as file: file.write('\n')
             self.gen = 0
             self.readData()
             self.writeData()
