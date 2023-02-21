@@ -70,12 +70,14 @@ class Prisoners(QObject):
         elif self.num_of_runs == 1 and self.players != 2:
             self.choices_C = 0
             self.tournaments_num = 0
+            self.rounds_num = 0
             self.createResult1N()
             self.createResult2N()
             self.createResult1a()
         elif self.num_of_runs > 1 and self.players != 2:
             self.choices_C = 0
             self.tournaments_num = 0
+            self.rounds_num = 0
             self.createResult1N()
             self.createResult2N()
             self.createResult1a()
@@ -870,6 +872,7 @@ class Prisoners(QObject):
         while self.duel_fulfilment == False:
             self.getStrategies()
             self.tournamentNPD()
+            self.rounds_num += 1
             self.min = min(self.c_of_opponents)
             self.id = self.c_of_opponents.index(self.min)
             if self.min >= self.num_of_opponents: self.duel_fulfilment = True
@@ -989,8 +992,9 @@ class Prisoners(QObject):
             self.choices_C = 0
             self.tournaments_num = 0
             with open('.\\RESULTS\\result_1a.txt', 'a') as file:
-                average = np.sum(self.SUM_payoff_N_players) / (np.max(self.c_of_opponents) * self.num_of_tournaments * self.players)
+                average = np.sum(self.SUM_payoff_N_players) / (self.rounds_num * self.num_of_tournaments * self.players)
                 file.write('  %d %.2f\n' % (self.gen, round(average, 2)))
+            self.rounds_num = 0
             with open('.\\RESULTS\\result_2N.txt', 'a') as file:
                 file.write('  %d ' % self.gen)
                 for i in range(len(temp)):
